@@ -1,0 +1,4 @@
+discord.py==v1.6.0
+pillow==8.0.1
+pathlib==1.0.1
+requests==2.24.0
