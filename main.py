@@ -3,7 +3,8 @@ import time
 import random
 import os
 
-bot = discum.Client(token = "TOKEN", log=True)
+TOKEN = os.getenv("TOKEN")
+bot = discum.Client(token = TOKEN, log=True)
 print('\nПодключение успешно.\n')
 
 def is_triggered(list, content):
