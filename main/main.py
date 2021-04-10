@@ -3,7 +3,6 @@ import time
 import random
 import os
 
-TOKEN = os.getenv("DISCORD_TOKEN")
 bot = discum.Client(token = TOKEN, log=True)
 print('\nПодключение успешно.\n')
 
