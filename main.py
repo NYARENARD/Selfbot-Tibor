@@ -5,7 +5,6 @@ import os
 
 TOKEN = os.getenv("TOKEN")
 bot = discum.Client(token = TOKEN, log=True)
-print('\nПодключение успешно.\n')
 
 def is_triggered(list, content):
     with open(list, 'r', encoding='utf-8') as read:
@@ -47,8 +46,7 @@ def main(resp):
                 msg_id = m['id']
         self = (m['author']['id'] != id)
 
-        
-        if self:
+        if self and channelID == '730552031735054337':
             if mentioned:
                 bot.reply(channelID, msg_id, response(channelID, 'database.txt'))
             elif is_triggered('trigger.txt', content):
