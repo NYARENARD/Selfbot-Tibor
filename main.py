@@ -31,6 +31,12 @@ def response(channelID, base):
 
 @bot.gateway.command
 def main(resp):
+    if resp.event.reaction_added:
+        m = resp.parsed.auto()
+        if m['emoji']['name']=='🤙':
+            time.sleep(random.randint(2, 4))
+            bot.addReaction(m['channel_id'],m['message_id'], '🤙')
+    
     if resp.event.message:
         m = resp.parsed.auto()
         channelID = m['channel_id']
