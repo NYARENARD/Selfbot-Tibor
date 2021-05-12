@@ -52,8 +52,8 @@ def main(resp):
                 msg_id = m['id']
         self = (m['author']['id'] != id)
 
-        trigger = "TRIGGER"
-        database = "DATABASE"
+        trigger = '"TRIGGER_NAME"'
+        database = '"DATABASE_NAME"'
 
         if self and (channelID == '730552031735054337' or channelID == '801377114905116685'):
             if mentioned:
