@@ -52,11 +52,11 @@ def main(resp):
                 msg_id = m['id']
         self = (m['author']['id'] != id)
 
-        if self and channelID == '730552031735054337':
+        if self and (channelID == '730552031735054337' or channelID == '801377114905116685'):
             if mentioned:
-                bot.reply(channelID, msg_id, response(channelID, 'database.txt'))
-            elif is_triggered('trigger.txt', content):
-                bot.sendMessage(channelID, response(channelID, 'database.txt'))
+                bot.reply(channelID, msg_id, response(channelID, "DATABASE"))
+            elif is_triggered("TRIGGER", content):
+                bot.sendMessage(channelID, response(channelID, "DATABASE"))
                 
         print("> channel {} | {}#{}: {}".format(channelID, username, discriminator, content))
 
