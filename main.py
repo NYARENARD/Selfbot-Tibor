@@ -26,7 +26,7 @@ def response(channelID, base):
         for line in read:
             length += 1
             if rand == length:
-                time.sleep(len(line.rstrip('\n')) // 3)
+                time.sleep(len(line.rstrip('\n')) // 4)
                 return line.rstrip('\n')
 
 @bot.gateway.command
