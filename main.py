@@ -55,7 +55,7 @@ def main(resp):
         trigger = os.getenv("TRIGGER_NAME")
         database = os.getenv("DATABASE_NAME")
 
-        if self and (channelID == '730552031735054337' or channelID == '801377114905116685'):
+        if self and (channelID == '730552031735054337' or channelID == '801377114905116685' or channelID == '841467235096068107' ) :
             if mentioned:
                 bot.reply(channelID, msg_id, response(channelID, database))
             elif is_triggered(trigger, content):
