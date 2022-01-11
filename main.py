@@ -16,7 +16,7 @@ class Bot:
 
 
     def __init__(self):
-        self.bot = discum.Client(self.token, log=False)
+        self.bot = discum.Client(token=self.token, log=False)
         print("\n>>> Подключение успешно.\n")
 
     def is_triggered(self, content):
