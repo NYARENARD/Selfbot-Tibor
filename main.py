@@ -18,6 +18,17 @@ class Bot:
     def __init__(self):
         self.bot = discum.Client(token=self.token, log=False)
         print("\n>>> Подключение успешно.\n")
+        self.enable_genai()
+		
+	#команды включения и отключения бота Genai в определенном канале		
+    def enable_genai(self):
+        self.bot.sendMessage("730552031735054337", "g.interval random")
+        self.bot.sendMessage("730552031735054337", "g.config mention_gen +")
+	
+    def kill_genai(self):
+        self.bot.sendMessage("730552031735054337", "g.interval off")
+        self.bot.sendMessage("730552031735054337", "g.config mention_gen -")
+
 
     def is_triggered(self, content):
         with open(self.trigger, 'r', encoding="utf-8") as f:
@@ -104,6 +115,7 @@ if __name__ == '__main__':
         thread.start()
 
     def bot_kill():
+        bot.kill_genai()
         bot.bot.gateway.close()
         thread.join()
         print("\n>>> Соединение сброшено.\n")
