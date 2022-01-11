@@ -23,10 +23,12 @@ class Bot:
 	#команды включения и отключения бота Genai в определенном канале		
     def enable_genai(self):
         self.bot.sendMessage("730552031735054337", "g.interval random")
+	time.sleep(1)
         self.bot.sendMessage("730552031735054337", "g.config mention_gen +")
 	
     def kill_genai(self):
         self.bot.sendMessage("730552031735054337", "g.interval off")
+	time.sleep(1)
         self.bot.sendMessage("730552031735054337", "g.config mention_gen -")
 
 
