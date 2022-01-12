@@ -117,6 +117,7 @@ if __name__ == '__main__':
         thread.start()
 
     def bot_kill():
+        global bot
         bot.kill_genai()
         bot.bot.gateway.close()
         thread.join()
