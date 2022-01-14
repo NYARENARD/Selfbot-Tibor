@@ -108,8 +108,6 @@ class Bot:
 
 if __name__ == '__main__':
 
-    global bot
-
     def bot_launch():
         global bot
         bot = Bot()
@@ -131,7 +129,7 @@ if __name__ == '__main__':
         if hour < 0:
             hour += 24
         if hour < 10:
-            hour = kill_hour = str('0' + hour)
+            hour = str('0' + hour)
         else:
             hour = str(hour)
         return hour + ':' + minute
