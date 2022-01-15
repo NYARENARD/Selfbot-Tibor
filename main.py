@@ -108,7 +108,7 @@ class Bot:
 
 if __name__ == '__main__':
 
-    bot = Bot()
+    bot = None
 
     def bot_launch():
         global bot
