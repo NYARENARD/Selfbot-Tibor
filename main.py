@@ -90,13 +90,17 @@ class Bot:
                 channelID = m["channel_id"]
                 username = m["author"]["username"]
                 discriminator = m["author"]["discriminator"]
-                id = self.bot.gateway.session.user["id"]
+                self_id = self.bot.gateway.session.user["id"]
                 content = m["content"]
                 timestamp = self._timestamp_parse(m["timestamp"])
+                try:
+                    bot_flag = m["author"]["bot"]
+                except Exception:
+                    bot_flag = False
                 
                 mentioned = False
                 for i in m["mentions"]:
-                    if id == i["id"]:
+                    if self_id == i["id"]:
                         mentioned = True
                         msg_id = m["id"]
                 mentioned_towrite = "[MENTIONED] " if mentioned else ''
@@ -105,11 +109,10 @@ class Bot:
                 triggered_towrite = "[TRIGGERED] " if triggered else ''
 
                 print("> {}{}{} | {} | {}#{}: {}".format(triggered_towrite, mentioned_towrite, channelID, timestamp, username, discriminator, content))
-                #self.bot.sendMessage("730552031735054337", "> {}{}{} | {} | {}#{}: {}".format(triggered_towrite, mentioned_towrite, channelID, timestamp, username, discriminator, content))
 
-                himself = (m["author"]["id"] == id)
+                himself = (m["author"]["id"] == self_id)
 
-                if not himself and channelID in self._channels: 
+                if not himself and channelID in self._channels and not bot_flag: 
                     if mentioned:
                         self.bot.reply(channelID, msg_id, self._response(channelID))
                     elif triggered:
@@ -144,7 +147,7 @@ if __name__ == '__main__':
     token = os.getenv("TOKEN")
     database = os.getenv("DATABASE_NAME")
     trigger = os.getenv("TRIGGER_NAME")
-    channels = os.getenv("ALLOWED_CHANNELS").split()
+    channels = os.getenv("CHANNELS").split()
     
     launch_time = MSKtoEU_timezone(os.getenv("LAUNCH_TIME"))
     kill_time = MSKtoEU_timezone(os.getenv("KILL_TIME"))
