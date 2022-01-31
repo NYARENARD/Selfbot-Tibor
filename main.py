@@ -17,15 +17,18 @@ class Bot:
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
-        print("\n>>> Подключение успешно.\n")
+        self._logging("\n>>> Подключение успешно.\n")
         self._genaiflag = 0
 
     def __del__(self):
         self.bot.gateway.close()
         self._thread.join()
-        print("\n>>> Соединение сброшено.\n")
+        self._logging("\n>>> Соединение сброшено.\n")
 	
-		
+    def _logging(self, message):
+        print(message)
+        self.bot.sendMessage("937728682464788480", message)
+
     def genai_enable(self):
         if self._genaiflag:
             return
@@ -49,7 +52,7 @@ class Bot:
         command_list = {self._prefix + "чатстарт" : [1, None, "Привет.", "Я и так уже разговариваю."],\
                         self._prefix + "чатстоп" : [0, None, "Принял, отчаливаю.", "Когда волк молчит - лучше его не перебивать."],\
                         self._prefix + "реактстарт" : [None, 1, "Ставлю реакции.", "Я и так уже ставлю реакции."],\
-                        self._prefix + "реактстоп" : [None, 0, "Не ставлю реакции.", "Я и так уже реакции не ставлю."],\
+                        self._prefix + "реактстоп" : [None, 0, "Не ставлю реакции.", "Я и так реакции не ставлю."],\
                         self._prefix + "генаистарт" : [None, None, "genaistart", "Генаи уже работает."],\
                         self._prefix + "генаистоп" : [None, None, "genaistop", "Генаи все еще не работает."]}
         flag_resp_gl = 1
@@ -115,7 +118,7 @@ class Bot:
 
                     himself = (m["member"]["user"]["id"] == id)
                     if not himself:
-                        print("> {} | {} | 🤙".format(channelID, messageID))
+                        self._logging("> {} | {} | 🤙".format(channelID, messageID))
 
         @self.bot.gateway.command
         def respond(resp):
@@ -147,7 +150,7 @@ class Bot:
                 forbidden_towrite = "[FORBIDDEN] " if (triggered or mentioned) and not flag_resp_gl else ''
 
                 if not bot_flag:
-                    print("> {}{}{}{}{} | {} | {}#{}: {}".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite,\
+                    self._logging("> {}{}{}{}{} | {} | {}#{}: {}".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite,\
                                                                  channelID, timestamp, username, discriminator, content))
 
                 himself = (m["author"]["id"] == self_id)
