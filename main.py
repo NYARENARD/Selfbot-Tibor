@@ -5,14 +5,16 @@ import schedule
 import os
 from threading import Thread
 
+
 class Bot:
 
-    def __init__(self, token, database, trigger, channels, prefix):
+    def __init__(self, token, database, trigger, channels, prefix, logchannel):
         self._token = token
         self._database = database
         self._trigger = trigger
         self._channels = channels
         self._prefix = prefix
+        self._log_channel = logchannel
 
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
@@ -27,7 +29,8 @@ class Bot:
 	
     def _logging(self, message):
         print(message)
-        self.bot.sendMessage("937728682464788480", message)
+        self.bot.sendMessage(self._log_channel, '`' + message + '`')
+
 
     def genai_enable(self):
         if self._genaiflag:
@@ -49,12 +52,12 @@ class Bot:
     
     def _commands_launch(self):
 
-        command_list = {self._prefix + "чатстарт" : [1, None, "Привет.", "Я и так уже разговариваю."],\
+        command_list = {self._prefix + "чатстарт" : [1, None, "Привет.", "Я уже разговариваю."],\
                         self._prefix + "чатстоп" : [0, None, "Принял, отчаливаю.", "Когда волк молчит - лучше его не перебивать."],\
                         self._prefix + "реактстарт" : [None, 1, "Ставлю реакции.", "Я и так уже ставлю реакции."],\
                         self._prefix + "реактстоп" : [None, 0, "Не ставлю реакции.", "Я и так реакции не ставлю."],\
                         self._prefix + "генаистарт" : [None, None, "genaistart", "Генаи уже работает."],\
-                        self._prefix + "генаистоп" : [None, None, "genaistop", "Генаи все еще не работает."]}
+                        self._prefix + "генаистоп" : [None, None, "genaistop", "Генаи и так не работает."]}
         flag_resp_gl = 1
         flag_rea_gl = 0
 
@@ -108,17 +111,11 @@ class Bot:
         def reaction_add(resp):
             if resp.event.reaction_added:
                 m = resp.parsed.auto()
-                if m["emoji"]["name"]=='🤙':
+                if m["emoji"]["name"]=='🤙' and flag_rea_gl:
                     channelID = m["channel_id"]
                     messageID = m["message_id"]
-                    id = self.bot.gateway.session.user["id"]
-                    if flag_rea_gl:
-                        time.sleep(1)
-                        self.bot.addReaction(channelID, messageID, '🤙')
-
-                    himself = (m["member"]["user"]["id"] == id)
-                    if not himself:
-                        self._logging("> {} | {} | 🤙".format(channelID, messageID))
+                    time.sleep(1)
+                    self.bot.addReaction(channelID, messageID, '🤙')
 
         @self.bot.gateway.command
         def respond(resp):
@@ -134,24 +131,20 @@ class Bot:
                     bot_flag = m["author"]["bot"]
                 except Exception:
                     bot_flag = False
-
-                command_towrite = "[COMMAND] " if content in command_list else ''
                 
+                command_towrite = 'C' if content in command_list else ''
+
                 mentioned = False
                 for i in m["mentions"]:
                     if self_id == i["id"]:
                         mentioned = True
                         msg_id = m["id"]
-                mentioned_towrite = "[MENTIONED] " if mentioned else ''
+                mentioned_towrite = 'M' if mentioned else ''
 
                 triggered = self._is_triggered(content)
-                triggered_towrite = "[TRIGGERED] " if triggered else ''
+                triggered_towrite = 'T' if triggered else ''
 
-                forbidden_towrite = "[FORBIDDEN] " if (triggered or mentioned) and not flag_resp_gl else ''
-
-                if not bot_flag:
-                    self._logging("> {}{}{}{}{} | {} | {}#{}: {}".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite,\
-                                                                 channelID, timestamp, username, discriminator, content))
+                forbidden_towrite = 'F' if (triggered or mentioned) and not flag_resp_gl else ''
 
                 himself = (m["author"]["id"] == self_id)
 
@@ -161,6 +154,11 @@ class Bot:
                             self.bot.reply(channelID, msg_id, self._response(channelID))
                         elif triggered:
                             self.bot.sendMessage(channelID, self._response(channelID))
+
+                if not bot_flag and channelID != self._log_channel:
+                    self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
+                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
+                                  "{}#{}".format(username, discriminator).rjust(19 if '🎷' in username else 20) + ": " + " {}".format(content))
           
         self.bot.gateway.run(auto_reconnect=True)
 
@@ -213,8 +211,9 @@ if __name__ == '__main__':
     trigger = os.getenv("TRIGGER_NAME")
     channels = os.getenv("CHANNELS").split()
     prefix = os.getenv("PREFIX")
+    logchannel = os.getenv("LOGCHANNEL")
 
-    instance = Bot(token, database, trigger, channels, prefix)
+    instance = Bot(token, database, trigger, channels, prefix, logchannel)
 
     launch_time = msktoeu_timezone(os.getenv("LAUNCH_TIME"))
     kill_time = msktoeu_timezone(os.getenv("KILL_TIME"))
