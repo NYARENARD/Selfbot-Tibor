@@ -7,34 +7,159 @@ from threading import Thread
 
 class Bot:
 
-    def __init__(self, token, database, trigger, channels):
+    def __init__(self, token, database, trigger, channels, prefix):
         self._token = token
         self._database = database
         self._trigger = trigger
         self._channels = channels
+        self._prefix = prefix
 
-        self.bot = discum.Client(token = self._token, log=False)           #не приват
+        self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
         print("\n>>> Подключение успешно.\n")
-        self._enable_genai()
+        self._genaiflag = 0
 
     def __del__(self):
-        self._kill_genai()
         self.bot.gateway.close()
         self._thread.join()
         print("\n>>> Соединение сброшено.\n")
 	
 		
-    def _enable_genai(self):
+    def genai_enable(self):
+        if self._genaiflag:
+            return
         self.bot.sendMessage("730552031735054337", "g.interval random")
         time.sleep(1)
         self.bot.sendMessage("730552031735054337", "g.config mention_gen +")
+        self._genaiflag = 1
 	
-    def _kill_genai(self):
+    def genai_kill(self):
+        if not self._genaiflag:
+            return
         self.bot.sendMessage("730552031735054337", "g.interval off")
         time.sleep(1)
         self.bot.sendMessage("730552031735054337", "g.config mention_gen -")
+        self._genaiflag = 0
+
+
+    
+    def _commands_launch(self):
+
+        command_list = {self._prefix + "чатстарт" : [1, None, "Привет.", "Я и так уже разговариваю."],\
+                        self._prefix + "чатстоп" : [0, None, "Принял, отчаливаю.", "Когда волк молчит - лучше его не перебивать."],\
+                        self._prefix + "реактстарт" : [None, 1, "Ставлю реакции.", "Я и так уже ставлю реакции."],\
+                        self._prefix + "реактстоп" : [None, 0, "Не ставлю реакции.", "Я и так уже реакции не ставлю."],\
+                        self._prefix + "генаистарт" : [None, None, "genaistart", "Генаи уже работает."],\
+                        self._prefix + "генаистоп" : [None, None, "genaistop", "Генаи все еще не работает."]}
+        flag_resp_gl = 1
+        flag_rea_gl = 0
+
+        def command_handle(config, channelID):
+            flag_resp = config[0]
+            flag_rea = config[1]
+            ans_gotit = config[2]
+            ans_nonsense = config[3]
+
+            nonlocal flag_resp_gl
+            nonlocal flag_rea_gl
+
+            if flag_resp != None:
+                if flag_resp == flag_resp_gl:
+                    self.bot.sendMessage(channelID, ans_nonsense)
+                else:
+                    flag_resp_gl = flag_resp
+                    self.bot.sendMessage(channelID, ans_gotit)
+
+            if flag_rea != None:
+                if flag_rea == flag_rea_gl:
+                    self.bot.sendMessage(channelID, ans_nonsense)
+                else:
+                    flag_rea_gl = flag_rea
+                    self.bot.sendMessage(channelID, ans_gotit)
+
+            if ans_gotit == "genaistart":
+                if self._genaiflag:
+                    self.bot.sendMessage(channelID, ans_nonsense)
+                else:
+                    self.genai_enable()
+
+            if ans_gotit == "genaistop":
+                if not self._genaiflag:
+                    self.bot.sendMessage(channelID, ans_nonsense)
+                else:
+                    self.genai_kill()
+
+        @self.bot.gateway.command
+        def read_command(resp):
+            if resp.event.message:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]
+                content = m["content"]
+
+                for command in command_list:
+                    if content == command:
+                        command_handle(command_list[command], channelID)
+
+        @self.bot.gateway.command
+        def reaction_add(resp):
+            if resp.event.reaction_added:
+                m = resp.parsed.auto()
+                if m["emoji"]["name"]=='🤙':
+                    channelID = m["channel_id"]
+                    messageID = m["message_id"]
+                    id = self.bot.gateway.session.user["id"]
+                    if flag_rea_gl:
+                        time.sleep(1)
+                        self.bot.addReaction(channelID, messageID, '🤙')
+
+                    himself = (m["member"]["user"]["id"] == id)
+                    if not himself:
+                        print("> {} | {} | 🤙".format(channelID, messageID))
+
+        @self.bot.gateway.command
+        def respond(resp):
+            if resp.event.message:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]
+                username = m["author"]["username"]
+                discriminator = m["author"]["discriminator"]
+                self_id = self.bot.gateway.session.user["id"]
+                content = m["content"]
+                timestamp = self._timestamp_parse(m["timestamp"])
+                try:
+                    bot_flag = m["author"]["bot"]
+                except Exception:
+                    bot_flag = False
+
+                command_towrite = "[COMMAND] " if content in command_list else ''
+                
+                mentioned = False
+                for i in m["mentions"]:
+                    if self_id == i["id"]:
+                        mentioned = True
+                        msg_id = m["id"]
+                mentioned_towrite = "[MENTIONED] " if mentioned else ''
+
+                triggered = self._is_triggered(content)
+                triggered_towrite = "[TRIGGERED] " if triggered else ''
+
+                forbidden_towrite = "[FORBIDDEN] " if (triggered or mentioned) and not flag_resp_gl else ''
+
+                if not bot_flag:
+                    print("> {}{}{}{}{} | {} | {}#{}: {}".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite,\
+                                                                 channelID, timestamp, username, discriminator, content))
+
+                himself = (m["author"]["id"] == self_id)
+
+                if flag_resp_gl:
+                    if not himself and channelID in self._channels and not bot_flag: 
+                        if mentioned:
+                            self.bot.reply(channelID, msg_id, self._response(channelID))
+                        elif triggered:
+                            self.bot.sendMessage(channelID, self._response(channelID))
+          
+        self.bot.gateway.run(auto_reconnect=True)
 
 
     def _is_triggered(self, content):
@@ -45,7 +170,7 @@ class Bot:
         return False  
 
     def _response(self, channelID):
-        time.sleep(random.randint(4, 8))
+        time.sleep(random.randint(3, 5))
         self.bot.typingAction(channelID)
         with open(self._database, 'r', encoding="utf-8") as f:
             base_ar = f.read().split('\n')
@@ -65,75 +190,11 @@ class Bot:
         return timestamp
 
 
-    def _commands_launch(self):
-
-        @self.bot.gateway.command
-        def reaction_add(resp):
-            if resp.event.reaction_added:
-                m = resp.parsed.auto()
-                if m["emoji"]["name"]=='🤙':
-                    channelID = m["channel_id"]
-                    messageID = m["message_id"]
-                    id = self.bot.gateway.session.user["id"]
-                    time.sleep(1)
-                    self.bot.addReaction(channelID, messageID, '🤙')
-
-                    himself = (m["member"]["user"]["id"] == id)
-                    if not himself:
-                        print("> {} | {} | 🤙".format(channelID, messageID))
-                    #self.bot.sendMessage("730552031735054337", "> {} | {} | 🤙".format(channelID, messageID))
-
-        @self.bot.gateway.command
-        def respond(resp):
-            if resp.event.message:
-                m = resp.parsed.auto()
-                channelID = m["channel_id"]
-                username = m["author"]["username"]
-                discriminator = m["author"]["discriminator"]
-                self_id = self.bot.gateway.session.user["id"]
-                content = m["content"]
-                timestamp = self._timestamp_parse(m["timestamp"])
-                try:
-                    bot_flag = m["author"]["bot"]
-                except Exception:
-                    bot_flag = False
-                
-                mentioned = False
-                for i in m["mentions"]:
-                    if self_id == i["id"]:
-                        mentioned = True
-                        msg_id = m["id"]
-                mentioned_towrite = "[MENTIONED] " if mentioned else ''
-
-                triggered = self._is_triggered(content)
-                triggered_towrite = "[TRIGGERED] " if triggered else ''
-
-                print("> {}{}{} | {} | {}#{}: {}".format(triggered_towrite, mentioned_towrite, channelID, timestamp, username, discriminator, content))
-
-                himself = (m["author"]["id"] == self_id)
-
-                if not himself and channelID in self._channels and not bot_flag: 
-                    if mentioned:
-                        self.bot.reply(channelID, msg_id, self._response(channelID))
-                    elif triggered:
-                        self.bot.sendMessage(channelID, self._response(channelID))
-          
-        self.bot.gateway.run(auto_reconnect=True)
-
 
 
 if __name__ == '__main__':
-    
-    def bot_launch():
-        global instance
-        instance = Bot(token, database, trigger, channels)
 
-    def bot_kill():
-        global instance
-        instance.__del__()
-        instance = None
-
-    def MSKtoEU_timezone(time_MSK):
+    def msktoeu_timezone(time_MSK):
         hour = int(time_MSK[0:2]) - 3
         minute = time_MSK[3:5]
         if hour < 0:
@@ -148,12 +209,15 @@ if __name__ == '__main__':
     database = os.getenv("DATABASE_NAME")
     trigger = os.getenv("TRIGGER_NAME")
     channels = os.getenv("CHANNELS").split()
-    
-    launch_time = MSKtoEU_timezone(os.getenv("LAUNCH_TIME"))
-    kill_time = MSKtoEU_timezone(os.getenv("KILL_TIME"))
+    prefix = os.getenv("PREFIX")
 
-    schedule.every().day.at(launch_time).do(bot_launch)
-    schedule.every().day.at(kill_time).do(bot_kill)
+    instance = Bot(token, database, trigger, channels, prefix)
+
+    launch_time = msktoeu_timezone(os.getenv("LAUNCH_TIME"))
+    kill_time = msktoeu_timezone(os.getenv("KILL_TIME"))
+
+    schedule.every().day.at(launch_time).do(instance.genai_enable)
+    schedule.every().day.at(kill_time).do(instance.genai_kill)
 
     while True:
         schedule.run_pending()
