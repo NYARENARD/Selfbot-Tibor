@@ -160,7 +160,7 @@ class Bot:
                                   "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
                                   "{}#{}".format(username, discriminator).rjust(19 if '🎷' in username else 20) + ": " + " {}".format(content))
           
-        self.bot.gateway.run(auto_reconnect=True)
+        self.bot.gateway.run()
 
 
     def _is_triggered(self, content):
