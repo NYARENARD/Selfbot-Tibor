@@ -29,6 +29,7 @@ class Bot:
 	
     def _logging(self, message):
         print(message)
+        time.sleep(1)
         self.bot.sendMessage(self._log_channel, '`' + message + '`')
 
 
