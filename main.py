@@ -148,18 +148,17 @@ class Bot:
 
                 himself = (m["author"]["id"] == self_id)
 
+                if not bot_flag and channelID != self._log_channel:
+                    self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
+                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
+                                  "{}#{}".format(username, discriminator).rjust(19 if '🎷' in username else 20) + ": " + " {}".format(content))
+                time.sleep(1)
                 if flag_resp_gl:
                     if not himself and channelID in self._channels and not bot_flag: 
                         if mentioned:
                             self.bot.reply(channelID, msg_id, self._rndm_response())
                         elif triggered:
                             self.bot.sendMessage(channelID, self._rndm_response())
-
-                if not bot_flag and channelID != self._log_channel:
-                    self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
-                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
-                                  "{}#{}".format(username, discriminator).rjust(19 if '🎷' in username else 20) + ": " + " {}".format(content))
-          
         self.bot.gateway.run()
 
 
