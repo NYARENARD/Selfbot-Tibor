@@ -1,3 +1,4 @@
+import typing
 import discum
 import time
 import random
@@ -29,22 +30,24 @@ class Bot:
 	
     def _logging(self, message):
         print(message)
-        time.sleep(1)
-        self.bot.sendMessage(self._log_channel, '`' + message + '`')
+        self._type_send(self._log_channel, '`' + message + '`')
 
+    def _type_send(self, channelID, message):
+        self.bot.typingAction(channelID)
+        self.bot.sendMessage(channelID, message)
 
     def genai_enable(self):
         if self._genaiflag:
             return
-        self.bot.sendMessage("730552031735054337", "g.interval random")
-        self.bot.sendMessage("730552031735054337", "g.config mention_gen +")
+        self._type_send("730552031735054337", "g.interval random")
+        self._type_send("730552031735054337", "g.config mention_gen +")
         self._genaiflag = 1
 	
     def genai_kill(self):
         if not self._genaiflag:
             return
-        self.bot.sendMessage("730552031735054337", "g.interval off")
-        self.bot.sendMessage("730552031735054337", "g.config mention_gen -")
+        self._type_send("730552031735054337", "g.interval off")
+        self._type_send("730552031735054337", "g.config mention_gen -")
         self._genaiflag = 0
 
 
@@ -71,27 +74,27 @@ class Bot:
 
             if flag_resp != None:
                 if flag_resp == flag_resp_gl:
-                    self.bot.sendMessage(channelID, ans_nonsense)
+                    self._type_send(channelID, ans_nonsense)
                 else:
                     flag_resp_gl = flag_resp
-                    self.bot.sendMessage(channelID, ans_gotit)
+                    self._type_send(channelID, ans_gotit)
 
             if flag_rea != None:
                 if flag_rea == flag_rea_gl:
-                    self.bot.sendMessage(channelID, ans_nonsense)
+                    self._type_send(channelID, ans_nonsense)
                 else:
                     flag_rea_gl = flag_rea
-                    self.bot.sendMessage(channelID, ans_gotit)
+                    self._type_send(channelID, ans_gotit)
 
             if ans_gotit == "genaistart":
                 if self._genaiflag:
-                    self.bot.sendMessage(channelID, ans_nonsense)
+                    self._type_send(channelID, ans_nonsense)
                 else:
                     self.genai_enable()
 
             if ans_gotit == "genaistop":
                 if not self._genaiflag:
-                    self.bot.sendMessage(channelID, ans_nonsense)
+                    self._type_send(channelID, ans_nonsense)
                 else:
                     self.genai_kill()
 
@@ -149,9 +152,10 @@ class Bot:
                 if flag_resp_gl:
                     if not himself and channelID in self._channels and not bot_flag: 
                         if mentioned:
+                            self.bot.typingAction(channelID)
                             self.bot.reply(channelID, msg_id, self._rndm_response())
                         elif triggered:
-                            self.bot.sendMessage(channelID, self._rndm_response())
+                            self._type_send(channelID, self._rndm_response())
 
                 if not bot_flag and channelID != self._log_channel:
                     self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
