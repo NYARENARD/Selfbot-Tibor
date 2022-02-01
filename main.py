@@ -36,7 +36,6 @@ class Bot:
         if self._genaiflag:
             return
         self.bot.sendMessage("730552031735054337", "g.interval random")
-        time.sleep(1)
         self.bot.sendMessage("730552031735054337", "g.config mention_gen +")
         self._genaiflag = 1
 	
@@ -44,7 +43,6 @@ class Bot:
         if not self._genaiflag:
             return
         self.bot.sendMessage("730552031735054337", "g.interval off")
-        time.sleep(1)
         self.bot.sendMessage("730552031735054337", "g.config mention_gen -")
         self._genaiflag = 0
 
@@ -114,7 +112,6 @@ class Bot:
                 if m["emoji"]["name"]=='🤙' and flag_rea_gl:
                     channelID = m["channel_id"]
                     messageID = m["message_id"]
-                    time.sleep(1)
                     self.bot.addReaction(channelID, messageID, '🤙')
 
         @self.bot.gateway.command
@@ -152,7 +149,7 @@ class Bot:
                     self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
                                   "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
                                   "{}#{}".format(username, discriminator).rjust(19 if '🎷' in username else 20) + ": " + " {}".format(content))
-                time.sleep(1)
+
                 if flag_resp_gl:
                     if not himself and channelID in self._channels and not bot_flag: 
                         if mentioned:
@@ -170,11 +167,9 @@ class Bot:
         return False  
 
     def _rndm_response(self):
-        time.sleep(1)
         with open(self._database, 'r', encoding="utf-8") as f:
             base_ar = f.read().split('\n')
             to_send = random.choice(base_ar)
-            time.sleep(len(to_send) // 6 + 1)
         return to_send
 
     def _timestamp_parse(self, raw):
