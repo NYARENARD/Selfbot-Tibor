@@ -151,9 +151,9 @@ class Bot:
                 if flag_resp_gl:
                     if not himself and channelID in self._channels and not bot_flag: 
                         if mentioned:
-                            self.bot.reply(channelID, msg_id, self._response(channelID))
+                            self.bot.reply(channelID, msg_id, self._rndm_response())
                         elif triggered:
-                            self.bot.sendMessage(channelID, self._response(channelID))
+                            self.bot.sendMessage(channelID, self._rndm_response())
 
                 if not bot_flag and channelID != self._log_channel:
                     self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
@@ -170,14 +170,13 @@ class Bot:
                     return True
         return False  
 
-    def _response(self, channelID):
-        time.sleep(random.randint(3, 5))
-        self.bot.typingAction(channelID)
+    def _rndm_response(self):
+        time.sleep(1)
         with open(self._database, 'r', encoding="utf-8") as f:
             base_ar = f.read().split('\n')
             to_send = random.choice(base_ar)
             time.sleep(len(to_send) // 6 + 1)
-            return to_send
+        return to_send
 
     def _timestamp_parse(self, raw):
         sec = raw[17:22]
