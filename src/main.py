@@ -134,8 +134,8 @@ class Bot:
                     activity = m['activities'][1]['name']
                 except:
                     activity = m['activities'][0]['name']
-                self.bot.gateway.fetchMembers(guildID, channelID_to_fetch, keep="all", wait=1)
-                
+                self.bot.gateway.fetchMembers(guildID, channelID_to_fetch, keep="all")
+                time.sleep(1)
                 role_already_given = (self._roleID in self.bot.gateway.session.guild(self._guildID).members[userid]['roles'])
 
                 if activity in banlist and not role_already_given:
