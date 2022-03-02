@@ -137,7 +137,7 @@ class Bot:
                 if activity in banlist:
                     self._give_role(guildID, userid, username, roleID)
                     self._logging('Role: {}'.format(username))
-                    self.bot.sendMessage(948531764643627069, 'Участник: {}\nПричина: {}'.format(username, activity))
+                    self.bot.sendMessage("948531764643627069", 'Участник: {}\nПричина: {}'.format(username, activity))
 
         @self.bot.gateway.command
         def respond(resp):
