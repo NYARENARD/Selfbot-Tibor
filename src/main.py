@@ -133,11 +133,11 @@ class Bot:
                     activity = m['activities'][1]['name']
                 except:
                     activity = m['activities'][0]['name']
-                print('{}: {}'.format(username, activity))
                 if activity in banlist:
                     self._give_role(guildID, userid, username, roleID)
-                    self._logging('Role: {}'.format(username))
                     self.bot.sendMessage("948531764643627069", 'Участник: {}\nПричина: {}'.format(username, activity))
+                    self._logging('Role given: {}'.format(username))
+                    
 
         @self.bot.gateway.command
         def respond(resp):
