@@ -49,7 +49,7 @@ class Bot:
         if not self._genaiflag:
             return
         self._type_send("730552031735054337", "g.interval off")
-	time.sleep(1)
+        time.sleep(1)
         self._type_send("730552031735054337", "g.config mention_gen -")
         self._genaiflag = 0
 
