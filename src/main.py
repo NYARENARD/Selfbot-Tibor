@@ -1,21 +1,22 @@
-import typing
 import discum
 import time
 import random
-import schedule
+#import schedule
 import os
 from threading import Thread
 
 
 class Bot:
 
-    def __init__(self, token, database, trigger, channels, prefix, logchannel):
+    def __init__(self, token, database, trigger, channels, prefix, logchannel, guildID, roleID):
         self._token = token
         self._database = database
         self._trigger = trigger
         self._channels = channels
         self._prefix = prefix
         self._log_channel = logchannel
+        self._guildID = guildID
+        self._roleID = roleID
 
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
@@ -61,7 +62,7 @@ class Bot:
                         self._prefix + "реактстоп" : [None, 0, "Не ставлю реакции.", "Я и так реакции не ставлю."],\
                         self._prefix + "генаистарт" : [None, None, "genaistart", "Генаи уже работает."],\
                         self._prefix + "генаистоп" : [None, None, "genaistop", "Генаи и так не работает."]}
-        flag_resp_gl = 1
+        flag_resp_gl = 0
         flag_rea_gl = 0
 
         def command_handle(config, channelID):
@@ -120,6 +121,25 @@ class Bot:
                     self.bot.addReaction(channelID, messageID, '🤙')
 
         @self.bot.gateway.command
+        def role_add(resp):
+            if resp.event.presence_updated:
+                m = resp.parsed.auto()
+                try:
+                    username = m['user']['username']
+                except:
+                    return
+                userid = m['user']['id']
+                try:
+                    activity = m['activities'][1]['name']
+                except:
+                    activity = m['activities'][0]['name']
+                print('{}: {}'.format(username, activity))
+                if activity in banlist:
+                    self._give_role(guildID, userid, username, roleID)
+                    self._logging('Role: {}'.format(username))
+                    self.bot.sendMessage(948531764643627069, 'Участник: {}\nПричина: {}'.format(username, activity))
+
+        @self.bot.gateway.command
         def respond(resp):
             if resp.event.message:
                 m = resp.parsed.auto()
@@ -131,7 +151,7 @@ class Bot:
                 timestamp = self._timestamp_parse(m["timestamp"])
                 try:
                     bot_flag = m["author"]["bot"]
-                except Exception:
+                except:
                     bot_flag = False
                 
                 command_towrite = 'C' if content in command_list else ''
@@ -166,6 +186,9 @@ class Bot:
 
         self.bot.gateway.run()
 
+    def _give_role(self, guildID, memberID, username, roleID):
+        self.bot.addMembersToRole(guildID, roleID, [memberID])
+        print(">>> Role given: {}".format(username))
 
     def _is_triggered(self, content):
         with open(self._trigger, 'r', encoding="utf-8") as f:
@@ -193,34 +216,35 @@ class Bot:
 
 
 
+def msktoeu_timezone(time_MSK):
+    hour = int(time_MSK[0:2]) - 3
+    minute = time_MSK[3:5]
+    if hour < 0:
+        hour += 24
+    if hour < 10:
+        hour = str('0' + hour)
+    else:
+        hour = str(hour)
+    return hour + ':' + minute
 
 if __name__ == '__main__':
-
-    def msktoeu_timezone(time_MSK):
-        hour = int(time_MSK[0:2]) - 3
-        minute = time_MSK[3:5]
-        if hour < 0:
-            hour += 24
-        if hour < 10:
-            hour = str('0' + hour)
-        else:
-            hour = str(hour)
-        return hour + ':' + minute
-
     token = os.getenv("TOKEN")
     database = "../txt/" + os.getenv("DATABASE_NAME")
     trigger = "../txt/" + os.getenv("TRIGGER_NAME")
     channels = os.getenv("CHANNELS").split()
     prefix = os.getenv("PREFIX")
     logchannel = os.getenv("LOGCHANNEL")
+    banlist = os.getenv("BANLIST").split(',')
+    guildID = os.getenv("GUILDID")
+    roleID = os.getenv("ROLEID")
 
-    instance = Bot(token, database, trigger, channels, prefix, logchannel)
+    instance = Bot(token, database, trigger, channels, prefix, logchannel, guildID, roleID)
 
-    launch_time = msktoeu_timezone(os.getenv("LAUNCH_TIME"))
-    kill_time = msktoeu_timezone(os.getenv("KILL_TIME"))
-
-    schedule.every().day.at(launch_time).do(instance.genai_enable)
-    schedule.every().day.at(kill_time).do(instance.genai_kill)
-
-    while True:
-        schedule.run_pending()
+    #launch_time = msktoeu_timezone(os.getenv("LAUNCH_TIME"))
+    #kill_time = msktoeu_timezone(os.getenv("KILL_TIME"))
+    #
+    #schedule.every().day.at(launch_time).do(instance.genai_enable)
+    #schedule.every().day.at(kill_time).do(instance.genai_kill)
+    #
+    #while True:
+    #    schedule.run_pending()
