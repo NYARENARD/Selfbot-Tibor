@@ -141,7 +141,7 @@ class Bot:
                 if activity in banlist and not role_already_given:
                     self._give_role(self._guildID, userid, username, self._roleID)
                     self.bot.sendMessage("948531764643627069", 'Участник: {}\nПричина: {}'.format(username, activity))
-                    self._logging('Role given: {}'.format(username))
+                    self._logging(">>> Role given: {}".format(username))
                     
 
         @self.bot.gateway.command
@@ -193,7 +193,6 @@ class Bot:
 
     def _give_role(self, guildID, memberID, username, roleID):
         self.bot.addMembersToRole(guildID, roleID, [memberID])
-        print(">>> Role given: {}".format(username))
 
     def _is_triggered(self, content):
         with open(self._trigger, 'r', encoding="utf-8") as f:
