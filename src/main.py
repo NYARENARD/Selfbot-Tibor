@@ -8,7 +8,7 @@ from threading import Thread
 
 class Bot:
 
-    def __init__(self, token, database, trigger, channels, prefix, logchannel, guildID, roleID):
+    def __init__(self, token, database, trigger, channels, prefix, logchannel, guildID, channelID_to_fetch, roleID):
         self._token = token
         self._database = database
         self._trigger = trigger
@@ -16,6 +16,7 @@ class Bot:
         self._prefix = prefix
         self._log_channel = logchannel
         self._guildID = guildID
+        self._channelID_to_fetch = channelID_to_fetch
         self._roleID = roleID
 
         self.bot = discum.Client(token = self._token, log=False)
@@ -49,7 +50,6 @@ class Bot:
         if not self._genaiflag:
             return
         self._type_send("730552031735054337", "g.interval off")
-        time.sleep(1)
         self._type_send("730552031735054337", "g.config mention_gen -")
         self._genaiflag = 0
 
@@ -134,8 +134,11 @@ class Bot:
                     activity = m['activities'][1]['name']
                 except:
                     activity = m['activities'][0]['name']
-                if activity in banlist:
-                    self._give_role(guildID, userid, username, roleID)
+                self.bot.gateway.fetchMembers(guildID, channelID_to_fetch)
+                role_already_given = (self._roleID in self.bot.gateway.session.guild(self._guildID).members[userid]['roles'])
+
+                if activity in banlist and not role_already_given:
+                    self._give_role(self._guildID, userid, username, self._roleID)
                     self.bot.sendMessage("948531764643627069", 'Участник: {}\nПричина: {}'.format(username, activity))
                     self._logging('Role given: {}'.format(username))
                     
@@ -237,9 +240,10 @@ if __name__ == '__main__':
     logchannel = os.getenv("LOGCHANNEL")
     banlist = os.getenv("BANLIST").split(',')
     guildID = os.getenv("GUILDID")
+    channelID_to_fetch = os.getenv("CHTOFETCH")
     roleID = os.getenv("ROLEID")
 
-    instance = Bot(token, database, trigger, channels, prefix, logchannel, guildID, roleID)
+    instance = Bot(token, database, trigger, channels, prefix, logchannel, guildID, channelID_to_fetch, roleID)
 
     #launch_time = msktoeu_timezone(os.getenv("LAUNCH_TIME"))
     #kill_time = msktoeu_timezone(os.getenv("KILL_TIME"))
