@@ -229,8 +229,8 @@ def msktoeu_timezone(time_MSK):
 
 if __name__ == '__main__':
     token = os.getenv("TOKEN")
-    database = "../txt/" + os.getenv("DATABASE_NAME")
-    trigger = "../txt/" + os.getenv("TRIGGER_NAME")
+    database = os.getenv("DATABASE_NAME")
+    trigger = os.getenv("TRIGGER_NAME")
     channels = os.getenv("CHANNELS").split()
     prefix = os.getenv("PREFIX")
     logchannel = os.getenv("LOGCHANNEL")
