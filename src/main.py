@@ -31,7 +31,7 @@ def main():
 
     instance = Bot(token, database, trigger, channels, prefix, logchannel, guildID, channelID_to_fetch, roleID, banlist)
 
-    if schedule_flag:
+    if int(schedule_flag):
         launch_time = MSK_to_UTC(launch_time)
         kill_time = MSK_to_UTC(kill_time)
     
