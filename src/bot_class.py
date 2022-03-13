@@ -138,7 +138,7 @@ class Bot:
                 content = m["content"]
 
                 if channelID == "937813709097680917":
-                    channel = content[0:17]
+                    channel = content[:18]
                     message = content[19:]
                     self.bot.sendMessage(channel, message)
 
