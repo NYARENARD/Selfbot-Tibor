@@ -30,13 +30,15 @@ class Bot:
         self._thread.join()
         self._logging("\n>>> Соединение сброшено.\n")
 	
-    def _logging(self, message):
+    def _logging(self, message, attachments):
         print(message)
-        self._type_send(self._log_channel, '`' + message + '`')
+        self._type_send(self._log_channel, '`' + message + '`', attachments)
 
-    def _type_send(self, channelID, message):
+    def _type_send(self, channelID, message, attachments):
         self.bot.typingAction(channelID)
         self.bot.sendMessage(channelID, message)
+        for url in attachments:
+            self.bot.sendFile(channelID, url, isurl=True)
 
     def genai_enable(self):
         self._type_send(self._genai_channel, "g.interval random")
@@ -133,52 +135,77 @@ class Bot:
                     self._logging("> Role given: {}".format(username))
 
         @self.bot.gateway.command
-        def resend(resp):
-            if resp.event.message:
-                m = resp.parsed.auto()
-                channelID = m["channel_id"]  
-                content = m["content"]
-
-                if channelID == self._log_channel:
-                    channel = content[:18]
-                    message = content[19:]
-                    self.bot.sendMessage(channel, message)
-
-        @self.bot.gateway.command
-        def respond(resp):
+        def log(resp):
             if resp.event.message:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
                 username = m["author"]["username"]
                 discriminator = m["author"]["discriminator"]
                 self_id = self.bot.gateway.session.user["id"]
-                content = m["content"]
                 timestamp = self._timestamp_parse(m["timestamp"])
+                content = m["content"]
+                attachments = []
+                for dict in m['attachments']:
+                    attachments.append(dict['url'])
+
                 try:
                     bot_flag = m["author"]["bot"]
                 except:
                     bot_flag = False
-                
                 command_towrite = 'C' if content in command_list else ''
+                mentioned = False
+                for i in m["mentions"]:
+                    if self_id == i["id"]:
+                        mentioned = True
+                        break
+                mentioned_towrite = 'M' if mentioned else ''
+                triggered = self._is_triggered(content)
+                triggered_towrite = 'T' if triggered else ''
+                forbidden_towrite = 'F' if (triggered or mentioned) and not flag_resp_gl else ''
+
+                if not bot_flag and channelID != self._log_channel:
+                    self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
+                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(23) + " | " + \
+                                  "{}#{}".format(username, discriminator).rjust(20) + ": " + " {}".format(content), attachments)
+
+        @self.bot.gateway.command
+        def resend(resp):
+            if resp.event.message:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]  
+                content = m["content"]
+                attachments = []
+                for dict in m['attachments']:
+                    attachments.append(dict['url'])
+
+                if channelID == self._log_channel:
+                    channel = content[:18]
+                    message = content[19:]
+                    self.bot.sendMessage(channel, message)
+                    for url in attachments:
+                        self.bot.sendFile(channel, url, isurl=True)
+
+        @self.bot.gateway.command
+        def respond(resp):
+            if resp.event.message:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]
+                self_id = self.bot.gateway.session.user["id"]
+                content = m["content"]
+                try:
+                    bot_flag = m["author"]["bot"]
+                except:
+                    bot_flag = False
 
                 mentioned = False
                 for i in m["mentions"]:
                     if self_id == i["id"]:
                         mentioned = True
                         msg_id = m["id"]
-                mentioned_towrite = 'M' if mentioned else ''
 
                 triggered = self._is_triggered(content)
-                triggered_towrite = 'T' if triggered else ''
-
-                forbidden_towrite = 'F' if (triggered or mentioned) and not flag_resp_gl else ''
 
                 himself = (m["author"]["id"] == self_id)
-
-                if not bot_flag and channelID != self._log_channel:
-                    self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
-                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(23) + " | " + \
-                                  "{}#{}".format(username, discriminator).rjust(20) + ": " + " {}".format(content))
 
                 if flag_resp_gl:
                     time.sleep(2)
