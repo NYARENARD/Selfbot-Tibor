@@ -16,6 +16,8 @@ class Bot:
         self._channelID_to_fetch = cfg["channelID_to_fetch"]
         self._roleID = cfg["roleID"]
         self._banlist = cfg["banlist"]
+        self._genai_channel = cfg["genai_channel"]
+        self._shame_channel = cfg["shame_channel"]
 
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
@@ -37,14 +39,14 @@ class Bot:
         self.bot.sendMessage(channelID, message)
 
     def genai_enable(self):
-        self._type_send("730552031735054337", "g.interval random")
+        self._type_send(self._genai_channel, "g.interval random")
         time.sleep(1)
-        self._type_send("730552031735054337", "g.config mention_gen +")
+        self._type_send(self._genai_channel, "g.config mention_gen +")
 	
     def genai_kill(self):
-        self._type_send("730552031735054337", "g.interval off")
+        self._type_send(self._genai_channel, "g.interval off")
         time.sleep(1)
-        self._type_send("730552031735054337", "g.config mention_gen -")
+        self._type_send(self._genai_channel, "g.config mention_gen -")
 
 
     
@@ -127,7 +129,7 @@ class Bot:
 
                 if activity in self._banlist and not role_already_given:
                     self._give_role(self._guildID, userid, username, self._roleID)
-                    self.bot.sendMessage("948531764643627069", "Имя: {}\nID: {}\nПричина: {}".format(username, userid, activity))
+                    self.bot.sendMessage(self._shame_channel, "Имя: {}\nID: {}\nПричина: {}".format(username, userid, activity))
                     self._logging("> Role given: {}".format(username))
 
         @self.bot.gateway.command
@@ -137,7 +139,7 @@ class Bot:
                 channelID = m["channel_id"]  
                 content = m["content"]
 
-                if channelID == "937813709097680917":
+                if channelID == self._log_channel:
                     channel = content[:18]
                     message = content[19:]
                     self.bot.sendMessage(channel, message)
@@ -175,7 +177,7 @@ class Bot:
 
                 if not bot_flag and channelID != self._log_channel:
                     self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
-                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
+                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(23) + " | " + \
                                   "{}#{}".format(username, discriminator).rjust(20) + ": " + " {}".format(content))
 
                 if flag_resp_gl:
