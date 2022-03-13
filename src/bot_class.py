@@ -129,7 +129,18 @@ class Bot:
                     self._give_role(self._guildID, userid, username, self._roleID)
                     self.bot.sendMessage("948531764643627069", "Имя: {}\nID: {}\nПричина: {}".format(username, userid, activity))
                     self._logging("> Role given: {}".format(username))
-                    
+
+        @self.bot.gateway.command
+        def resend(resp):
+            if resp.event.message:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]  
+                content = m["content"]
+
+                if channelID == "937813709097680917":
+                    channel = content[0:17]
+                    message = content[19:]
+                    self.bot.sendMessage(channel, message)
 
         @self.bot.gateway.command
         def respond(resp):
