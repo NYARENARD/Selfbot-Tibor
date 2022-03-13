@@ -5,17 +5,17 @@ import random
 
 class Bot:
     
-    def __init__(self, token, database, trigger, channels, prefix, logchannel, guildID, channelID_to_fetch, roleID, banlist):
-        self._token = token
-        self._database = database
-        self._trigger = trigger
-        self._channels = channels
-        self._prefix = prefix
-        self._log_channel = logchannel
-        self._guildID = guildID
-        self._channelID_to_fetch = channelID_to_fetch
-        self._roleID = roleID
-        self._banlist = banlist
+    def __init__(self, cfg):
+        self._token = cfg["token"]
+        self._database = cfg["database"]
+        self._trigger = cfg["trigger"]
+        self._channels = cfg["channels"]
+        self._prefix = cfg["prefix"]
+        self._log_channel = cfg["logchannel"]
+        self._guildID = cfg["guildID"]
+        self._channelID_to_fetch = cfg["channelID_to_fetch"]
+        self._roleID = cfg["roleID"]
+        self._banlist = cfg["banlist"]
 
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
@@ -37,20 +37,14 @@ class Bot:
         self.bot.sendMessage(channelID, message)
 
     def genai_enable(self):
-        if self._genaiflag:
-            return
         self._type_send("730552031735054337", "g.interval random")
         time.sleep(1)
         self._type_send("730552031735054337", "g.config mention_gen +")
-        self._genaiflag = 1
 	
     def genai_kill(self):
-        if not self._genaiflag:
-            return
         self._type_send("730552031735054337", "g.interval off")
         time.sleep(1)
         self._type_send("730552031735054337", "g.config mention_gen -")
-        self._genaiflag = 0
 
 
     
@@ -89,16 +83,10 @@ class Bot:
                     self._type_send(channelID, ans_gotit)
 
             if ans_gotit == "genaistart":
-                if self._genaiflag:
-                    self._type_send(channelID, ans_nonsense)
-                else:
-                    self.genai_enable()
+                self.genai_enable()
 
             if ans_gotit == "genaistop":
-                if not self._genaiflag:
-                    self._type_send(channelID, ans_nonsense)
-                else:
-                    self.genai_kill()
+                self.genai_kill()
 
         @self.bot.gateway.command
         def read_command(resp):
@@ -110,6 +98,7 @@ class Bot:
                 for command in command_list:
                     if content == command:
                         command_handle(command_list[command], channelID)
+                        break
 
         @self.bot.gateway.command
         def reaction_add(resp):
@@ -176,7 +165,7 @@ class Bot:
                 if not bot_flag and channelID != self._log_channel:
                     self._logging('> ' + "[{}{}{}{}]".format(command_towrite, forbidden_towrite, triggered_towrite, mentioned_towrite).rjust(6) + ' ' + \
                                   "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
-                                  "{}#{}".format(username, discriminator).rjust(19 if '🎷' in username else 20) + ": " + " {}".format(content))
+                                  "{}#{}".format(username, discriminator).rjust(20) + ": " + " {}".format(content))
 
                 if flag_resp_gl:
                     time.sleep(2)
@@ -189,7 +178,7 @@ class Bot:
 
         self.bot.gateway.run()
 
-    def _give_role(self, guildID, memberID, username, roleID):
+    def _give_role(self, guildID, memberID, roleID):
         self.bot.addMembersToRole(guildID, roleID, [memberID])
 
     def _is_triggered(self, content):
