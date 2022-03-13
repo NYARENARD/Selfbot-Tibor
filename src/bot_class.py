@@ -22,13 +22,13 @@ class Bot:
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
-        self._logging("\n>>> Подключение успешно.\n")
+        self._logging("\n>>> Подключение успешно.\n", [])
         self._genaiflag = 0
 
     def __del__(self):
         self.bot.gateway.close()
         self._thread.join()
-        self._logging("\n>>> Соединение сброшено.\n")
+        self._logging("\n>>> Соединение сброшено.\n", [])
 	
     def _logging(self, message, attachments):
         print(message)
@@ -132,7 +132,7 @@ class Bot:
                 if activity in self._banlist and not role_already_given:
                     self._give_role(self._guildID, userid, username, self._roleID)
                     self.bot.sendMessage(self._shame_channel, "Имя: {}\nID: {}\nПричина: {}".format(username, userid, activity))
-                    self._logging("> Role given: {}".format(username))
+                    self._logging("> Role given: {}".format(username), [])
 
         @self.bot.gateway.command
         def log(resp):
