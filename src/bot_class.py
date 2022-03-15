@@ -214,7 +214,7 @@ class Bot:
                             self.bot.typingAction(channelID)
                             self.bot.reply(channelID, msg_id, self._rndm_response())
                         elif triggered:
-                            self._type_send(channelID, self._rndm_response())
+                            self._type_send(channelID, self._rndm_response(), [])
 
         self.bot.gateway.run()
 
