@@ -74,17 +74,17 @@ class Bot:
 
             if flag_resp != None:
                 if flag_resp == flag_resp_gl:
-                    self._type_send(channelID, ans_nonsense)
+                    self._type_send(channelID, ans_nonsense, [])
                 else:
                     flag_resp_gl = flag_resp
-                    self._type_send(channelID, ans_gotit)
+                    self._type_send(channelID, ans_gotit, [])
 
             if flag_rea != None:
                 if flag_rea == flag_rea_gl:
-                    self._type_send(channelID, ans_nonsense)
+                    self._type_send(channelID, ans_nonsense, [])
                 else:
                     flag_rea_gl = flag_rea
-                    self._type_send(channelID, ans_gotit)
+                    self._type_send(channelID, ans_gotit, [])
 
             if ans_gotit == "genaistart":
                 self.genai_enable()
