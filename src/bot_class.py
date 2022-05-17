@@ -106,16 +106,16 @@ class Bot:
 
         @self.bot.gateway.command
         def reaction_add(resp):
-            if resp.event.reaction_added:
+            if resp.event.reaction_added and flag_rea_gl:
                 m = resp.parsed.auto()
-                if m["emoji"]["name"]=='🤙' and flag_rea_gl:
+                if m["emoji"]["name"]=='🤙':
                     channelID = m["channel_id"]
                     messageID = m["message_id"]
                     self.bot.addReaction(channelID, messageID, '🤙')
         
         @self.bot.gateway.command
         def translate(resp):
-            if resp.event.message:
+            if resp.event.message and flag_trans_gl:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
                 content = m["content"]
