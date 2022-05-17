@@ -11,7 +11,9 @@ class_vars = {
     "banlist" : os.getenv("BANLIST").split(','),
     "guildID" : os.getenv("GUILDID"),
     "channelID_to_fetch" : os.getenv("CHTOFETCH"),
-    "roleID" : os.getenv("ROLEID")
+    "roleID" : os.getenv("ROLEID"),
+    "genai_channel" : os.getenv("GENAI_CHANNEL"),
+    "shame_channel" : os.getenv("SHAME_CHANNEL")
 }
 
 schedule_vars = {

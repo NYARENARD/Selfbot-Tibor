@@ -1,1 +1,1 @@
-worker: python src/main.py
+selfbot: python src/main.py
