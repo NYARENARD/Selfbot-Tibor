@@ -133,7 +133,7 @@ class Bot:
                     inv_langs = {v: k for k, v in LANGUAGES.items()}
                     content = content.split(' ')
                     if len(content) == 1:
-                        dst_lang = "ru"
+                        lang_code = "ru"
                     elif len(content) > 1:
                         dst_lang_raw = content[1].lower()
                         dst_lang = translator.translate(dst_lang_raw, dest="en") 
