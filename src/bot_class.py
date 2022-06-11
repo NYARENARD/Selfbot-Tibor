@@ -135,7 +135,7 @@ class Bot:
                     if not (len(content) == 1 and "<@" in content[0]):
                         if len(content) > 1:
                             dst_lang_raw = content[1]
-                        elif len(content) == 1 and "<@" not in content[0]:
+                        elif "<@" not in content[0]:
                             dst_lang_raw = content[0]
                         dst_lang = translator.translate(dst_lang_raw, dest="en").text.lower()
                         lang_code = inv_langs[dst_lang]
