@@ -132,10 +132,10 @@ class Bot:
                 replied_to_bot = (ref_msg["author"]["id"] == self_id) 
                 if mentioned and not replied_to_bot:
                     inv_langs = {v: k for k, v in LANGUAGES.items()}
-                    content.split()
+                    content.split(' ')
                     if len(content) == 1:
                         dst_lang = "ru"
-                    else:
+                    elif len(content) > 1:
                         dst_lang = inv_langs[content[1]]
                     translator = Translator()
                     translation = translator.translate(ref_content, dest=dst_lang)
