@@ -3,6 +3,7 @@ from threading import Thread
 import time
 import random
 from googletrans import Translator
+from googletrans import LANGUAGES
 
 class Bot:
     
@@ -130,11 +131,14 @@ class Bot:
                         msg_id = m["id"]
                 replied_to_bot = (ref_msg["author"]["id"] == self_id) 
                 if mentioned and not replied_to_bot:
+                    inv_langs = {v: k for k, v in LANGUAGES.items()}
+                    content.split()
+                    if len(content) == 1:
+                        dst_lang = "ru"
+                    else:
+                        dst_lang = inv_langs[content[1]]
                     translator = Translator()
-                            #languages = translator.detect([content])
-                            #for lang in languages:
-                            #    if lang.lang == "uk" and not himself:
-                    translation = translator.translate(ref_content, dest="ru")
+                    translation = translator.translate(ref_content, dest=dst_lang)
                     self.bot.typingAction(channelID)
                     self.bot.reply(channelID, msg_id, '`' + translation.text + '`')
 
