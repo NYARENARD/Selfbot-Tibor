@@ -13,6 +13,7 @@ class Bot:
         self._channels = cfg["channels"]
         self._prefix = cfg["prefix"]
         self._log_channel = cfg["logchannel"]
+        self._auto_trans_chs = cfg["auto_trans_chs"] 
 
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
@@ -90,6 +91,24 @@ class Bot:
                     messageID = m["message_id"]
                     self.bot.addReaction(channelID, messageID, '🤙')
         
+        @self.bot.gateway.command
+        def translate_auto(resp):
+            if resp.event.message and flag_trans_gl:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]
+                content = m["content"]
+                self_id = self.bot.gateway.session.user["id"]
+                himself = (m["author"]["id"] == self_id)
+                
+                if channelID in self._auto_trans_chs:
+                    translator = Translator()
+                    languages = translator.detect([content])
+                    for lang in languages:
+                        if lang.lang == "uk" and not himself:
+                            translation = translator.translate(ref_content, dest="ru")
+                            self.bot.typingAction(channelID)
+                            self.bot.reply(channelID, msg_id, '`' + translation.text + '`')
+
         @self.bot.gateway.command
         def translate(resp):
             if resp.event.message and flag_trans_gl:
