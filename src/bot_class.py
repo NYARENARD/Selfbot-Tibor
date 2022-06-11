@@ -119,11 +119,12 @@ class Bot:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
                 content = m["content"]
+                himself = (m["author"]["id"] == self_id)
 
                 translator = Translator()
                 languages = translator.detect([content])
                 for lang in languages:
-                    if lang.lang == "uk":
+                    if lang.lang == "uk" and not himself:
                         translation = translator.translate(content, dest="ru")
                         self.bot.typingAction(channelID)
                         self._type_send(channelID, translation.text, []) 
