@@ -42,14 +42,14 @@ class Bot:
             self.bot.sendFile(channelID, url, isurl=True)
 
     def genai_enable(self):
-        self._type_send(self._genai_channel, "g.interval random")
+        self._type_send(self._genai_channel, "g.interval random", [])
         time.sleep(1)
-        self._type_send(self._genai_channel, "g.config mention_gen +")
+        self._type_send(self._genai_channel, "g.config mention_gen +", [])
 	
     def genai_kill(self):
-        self._type_send(self._genai_channel, "g.interval off")
+        self._type_send(self._genai_channel, "g.interval off", []) 
         time.sleep(1)
-        self._type_send(self._genai_channel, "g.config mention_gen -")
+        self._type_send(self._genai_channel, "g.config mention_gen -", []) 
 
 
     
@@ -89,7 +89,7 @@ class Bot:
                 self.genai_enable()
             elif command_name == "генаистоп":
                 self.genai_kill()
-            self._type_send(channelID, ans_gotit)
+            self._type_send(channelID, ans_gotit, []) 
 
 
         @self.bot.gateway.command
@@ -124,7 +124,7 @@ class Bot:
                 if lang == "uk":
                     translation = Translator().translate(content, dest="ru")
                     self.bot.typingAction(channelID)
-                    self._type_send(channelID, translation.text)
+                    self._type_send(channelID, translation.text, []) 
 
 
         @self.bot.gateway.command
@@ -228,7 +228,7 @@ class Bot:
                             self.bot.typingAction(channelID)
                             self.bot.reply(channelID, msg_id, self._rndm_response())
                         elif triggered:
-                            self._type_send(channelID, self._rndm_response())
+                            self._type_send(channelID, self._rndm_response(), [])
 
         self.bot.gateway.run()
 
