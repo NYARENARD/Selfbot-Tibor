@@ -26,7 +26,7 @@ class Bot:
 	
     def _logging(self, message, attachments):
         print(message)
-        self._type_send(self._log_channel, '`' + message + '`', attachments)
+        self._type_send(self._log_channel, '`' + message + '`' if '`' not in message else message , attachments)
 
     def _type_send(self, channelID, message, attachments):
         self.bot.typingAction(channelID)
@@ -105,7 +105,7 @@ class Bot:
                     if lang.lang == "uk" and not himself:
                         translation = translator.translate(content, dest="ru")
                         self.bot.typingAction(channelID)
-                        self._type_send(channelID, translation.text, []) 
+                        self._type_send(channelID, '`' + translation.text + '`', []) 
 
 
         @self.bot.gateway.command
