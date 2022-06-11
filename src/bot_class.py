@@ -28,8 +28,6 @@ class Bot:
 	
     def _logging(self, message, attachments):
         print(message)
-        if '`' in message:
-            message.replace('`', '')
         self._type_send(self._log_channel, '`' + message + '`', attachments)
 
     def _type_send(self, channelID, message, attachments):
@@ -131,17 +129,19 @@ class Bot:
                         msg_id = m["id"]
                 replied_to_bot = (ref_msg["author"]["id"] == self_id) 
                 if mentioned and not replied_to_bot:
+                    translator = Translator()
                     inv_langs = {v: k for k, v in LANGUAGES.items()}
                     content = content.split(' ')
-                    print(content) 
                     if len(content) == 1:
                         dst_lang = "ru"
                     elif len(content) > 1:
-                        dst_lang = inv_langs[content[1].lower()]
-                    translator = Translator()
-                    translation = translator.translate(ref_content, dest=dst_lang)
+                        dst_lang_raw = content[1].lower()
+                        dst_lang = translator.translate(dst_lang_raw, dest="en") 
+                        lang_code = inv_langs[dst_lang]
+                    
+                    translation = translator.translate(ref_content, dest=lang_code)
                     self.bot.typingAction(channelID)
-                    self.bot.reply(channelID, msg_id, '`' + translation.text + '`')
+                    self.bot.reply(channelID, msg_id, '*' + translation.text + '*')
 
 
         @self.bot.gateway.command
