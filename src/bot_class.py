@@ -127,18 +127,20 @@ class Bot:
                     if self_id == i["id"]:
                         mentioned = True
                         msg_id = m["id"]
-                replied_to_bot = (ref_msg["author"]["id"] == self_id) 
-                if mentioned and not replied_to_bot:
+                #replied_to_bot = (ref_msg["author"]["id"] == self_id) 
+                if mentioned:# and not replied_to_bot:
                     translator = Translator()
                     inv_langs = {v: k for k, v in LANGUAGES.items()}
                     content = content.split(' ')
-                    if len(content) == 1:
-                        lang_code = "ru"
-                    elif len(content) > 1:
-                        dst_lang_raw = content[1]
+                    if not (len(content) == 1 and "<@" in content[0]):
+                        if len(content) > 1:
+                            dst_lang_raw = content[1]
+                        elif len(content) == 1 and "<@" not in content[0]:
+                            dst_lang_raw = content[0]
                         dst_lang = translator.translate(dst_lang_raw, dest="en").text.lower()
                         lang_code = inv_langs[dst_lang]
-                    
+                    else:
+                        lang_code = "ru"
                     translation = translator.translate(ref_content, dest=lang_code)
                     self.bot.typingAction(channelID)
                     self.bot.reply(channelID, msg_id, '*' + translation.text + '*')
