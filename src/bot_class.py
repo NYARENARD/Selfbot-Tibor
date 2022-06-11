@@ -133,6 +133,7 @@ class Bot:
                 if mentioned and not replied_to_bot:
                     inv_langs = {v: k for k, v in LANGUAGES.items()}
                     content.split(' ')
+                    print(content) 
                     if len(content) == 1:
                         dst_lang = "ru"
                     elif len(content) > 1:
