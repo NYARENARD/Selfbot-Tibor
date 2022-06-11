@@ -13,18 +13,11 @@ class Bot:
         self._channels = cfg["channels"]
         self._prefix = cfg["prefix"]
         self._log_channel = cfg["logchannel"]
-        self._guildID = cfg["guildID"]
-        self._channelID_to_fetch = cfg["channelID_to_fetch"]
-        self._roleID = cfg["roleID"]
-        self._banlist = cfg["banlist"]
-        self._genai_channel = cfg["genai_channel"]
-        self._shame_channel = cfg["shame_channel"]
 
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
         self._logging("\n>>> Подключение успешно.\n", [])
-        self._genaiflag = 0
 
     def __del__(self):
         self.bot.gateway.close()
@@ -39,17 +32,7 @@ class Bot:
         self.bot.typingAction(channelID)
         self.bot.sendMessage(channelID, message)
         for url in attachments:
-            self.bot.sendFile(channelID, url, isurl=True)
-
-    def genai_enable(self):
-        self._type_send(self._genai_channel, "g.interval random", [])
-        time.sleep(1)
-        self._type_send(self._genai_channel, "g.config mention_gen +", [])
-	
-    def genai_kill(self):
-        self._type_send(self._genai_channel, "g.interval off", []) 
-        time.sleep(1)
-        self._type_send(self._genai_channel, "g.config mention_gen -", []) 
+            self.bot.sendFile(channelID, url, isurl=True) 
 
 
     
@@ -59,8 +42,6 @@ class Bot:
                         self._prefix + "чатстоп" : ["чатстоп", "Принял."],\
                         self._prefix + "реактстарт" : ["реактстарт", "Ставлю реакции."],\
                         self._prefix + "реактстоп" : ["реактстоп", "Не ставлю реакции."],\
-                        self._prefix + "генаистарт" : ["генаистарт", ""],\
-                        self._prefix + "генаистоп" : ["генаистоп", ""],\
                         self._prefix + "трансстарт" : ["трансстарт", "Перевожу с UA на RU."],\
                         self._prefix + "трансстоп" : ["трансстоп", "Не перевожу."]}
         flag_resp_gl = 0
@@ -85,10 +66,6 @@ class Bot:
                 flag_trans_gl = 1
             elif command_name == "трансстоп":
                 flag_trans_gl = 0
-            elif command_name == "генаистарт":
-                self.genai_enable()
-            elif command_name == "генаистоп":
-                self.genai_kill()
             self._type_send(channelID, ans_gotit, []) 
 
 
@@ -130,27 +107,6 @@ class Bot:
                         self.bot.typingAction(channelID)
                         self._type_send(channelID, translation.text, []) 
 
-
-        @self.bot.gateway.command
-        def role_add(resp):
-            if resp.event.presence_updated:
-                m = resp.parsed.auto()
-                try:
-                    username = m['user']['username']
-                except:
-                    return
-                userid = m['user']['id']
-                try:
-                    activity = m['activities'][1]['name']
-                except:
-                    activity = m['activities'][0]['name']
-                self.bot.gateway.fetchMembers(self._guildID, self._channelID_to_fetch, keep="all")
-                role_already_given = (self._roleID in self.bot.gateway.session.guild(self._guildID).members[userid]['roles'])
-
-                if activity in self._banlist and not role_already_given:
-                    self._give_role(self._guildID, userid, username, self._roleID)
-                    self.bot.sendMessage(self._shame_channel, "Имя: {}\nID: {}\nПричина: {}".format(username, userid, activity))
-                    self._logging("> Role given: {}".format(username), [])
 
         @self.bot.gateway.command
         def log(resp):
@@ -235,9 +191,6 @@ class Bot:
                             self._type_send(channelID, self._rndm_response(), [])
 
         self.bot.gateway.run()
-
-    def _give_role(self, guildID, memberID, roleID):
-        self.bot.addMembersToRole(guildID, roleID, [memberID])
 
     def _is_triggered(self, content):
         with open(self._trigger, 'r', encoding="utf-8") as f:
