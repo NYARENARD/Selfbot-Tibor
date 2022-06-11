@@ -65,7 +65,7 @@ class Bot:
                         self._prefix + "трансстоп" : ["трансстоп", "Не перевожу."]}
         flag_resp_gl = 0
         flag_rea_gl = 0
-        flag_trans_gl = 0
+        flag_trans_gl = 1
 
         def command_handle(config, channelID):
             command_name = config[0]
@@ -119,6 +119,7 @@ class Bot:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
                 content = m["content"]
+                self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
 
                 translator = Translator()
