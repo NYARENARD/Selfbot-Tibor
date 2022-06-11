@@ -136,7 +136,7 @@ class Bot:
                     if len(content) == 1:
                         dst_lang = "ru"
                     elif len(content) > 1:
-                        dst_lang = inv_langs[content[1]]
+                        dst_lang = inv_langs[content[1].lower()]
                     translator = Translator()
                     translation = translator.translate(ref_content, dest=dst_lang)
                     self.bot.typingAction(channelID)
