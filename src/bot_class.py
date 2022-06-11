@@ -46,7 +46,7 @@ class Bot:
                         self._prefix + "трансстоп" : ["трансстоп", "Не перевожу."]}
         flag_resp_gl = 0
         flag_rea_gl = 0
-        flag_trans_gl = 1
+        flag_trans_gl = 0
 
         def command_handle(config, channelID):
             command_name = config[0]
