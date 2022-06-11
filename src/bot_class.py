@@ -14,7 +14,7 @@ class Bot:
         self._prefix = cfg["prefix"]
         self._log_channel = cfg["logchannel"]
 
-        self.bot = discum.Client(token = self._token, log=True)
+        self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
         self._logging("\n>>> Подключение успешно.\n", [])
@@ -98,14 +98,23 @@ class Bot:
                 content = m["content"]
                 self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
-
-                translator = Translator()
-                languages = translator.detect([content])
-                for lang in languages:
-                    if lang.lang == "uk" and not himself:
-                        translation = translator.translate(content, dest="ru")
-                        self.bot.typingAction(channelID)
-                        self._type_send(channelID, '`' + translation.text + '`', []) 
+                ref_msg = m["referenced_message"]
+                ref_content = ref_msg["content"]
+                
+                mentioned = False
+                for i in m["mentions"]:
+                    if self_id == i["id"]:
+                        mentioned = True
+                        msg_id = m["id"]
+                replied_to_bot = (ref_msg["author"]["id"] == self_id) 
+                if mentioned and not replied_to_bot:
+                    translator = Translator()
+                            #languages = translator.detect([content])
+                            #for lang in languages:
+                            #    if lang.lang == "uk" and not himself:
+                    translation = translator.translate(ref_content, dest="ru")
+                    self.bot.typingAction(channelID)
+                    self.bot.reply(channelID, msg_id, '`' + translation.text + '`')
 
 
         @self.bot.gateway.command
