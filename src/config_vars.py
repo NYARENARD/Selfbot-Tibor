@@ -7,5 +7,6 @@ class_vars = {
     "trigger" : os.getenv("TRIGGER_NAME"),
     "channels" : os.getenv("CHANNELS").split(),
     "prefix" : os.getenv("PREFIX"),
-    "logchannel" : os.getenv("LOGCHANNEL")
+    "logchannel" : os.getenv("LOGCHANNEL"),
+    "auto_trans_chs" : os.getenv("AUTO_TRANS_CHS")
 }
