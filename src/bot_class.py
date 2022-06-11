@@ -136,7 +136,7 @@ class Bot:
                         lang_code = "ru"
                     elif len(content) > 1:
                         dst_lang_raw = content[1].lower()
-                        dst_lang = translator.translate(dst_lang_raw, dest="en") 
+                        dst_lang = translator.translate(dst_lang_raw, dest="en").text
                         lang_code = inv_langs[dst_lang]
                     
                     translation = translator.translate(ref_content, dest=lang_code)
