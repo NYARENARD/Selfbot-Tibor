@@ -99,6 +99,8 @@ class Bot:
                 self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
                 ref_msg = m["referenced_message"]
+                if ref_msg == None:
+                    return
                 ref_content = ref_msg["content"]
                 
                 mentioned = False
