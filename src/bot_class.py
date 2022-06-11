@@ -27,7 +27,9 @@ class Bot:
 	
     def _logging(self, message, attachments):
         print(message)
-        self._type_send(self._log_channel, '`' + message + '`' if '`' not in message else message , attachments)
+        if '`' in message:
+            message.replace('`', '')
+        self._type_send(self._log_channel, '`' + message + '`', attachments)
 
     def _type_send(self, channelID, message, attachments):
         self.bot.typingAction(channelID)
@@ -47,7 +49,7 @@ class Bot:
                         self._prefix + "трансстоп" : ["трансстоп", "Не перевожу."]}
         flag_resp_gl = 0
         flag_rea_gl = 0
-        flag_trans_gl = 0
+        flag_trans_gl = 1
 
         def command_handle(config, channelID):
             command_name = config[0]
