@@ -120,8 +120,8 @@ class Bot:
                 channelID = m["channel_id"]
                 content = m["content"]
 
-                lang = Translator().detect(content)
-                if lang.lang == "uk":
+                language = Translator().detect(content).lang
+                if language == "uk":
                     translation = Translator().translate(content, dest="ru")
                     self.bot.typingAction(channelID)
                     self._type_send(channelID, translation.text, []) 
