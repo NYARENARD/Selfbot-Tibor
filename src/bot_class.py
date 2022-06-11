@@ -45,10 +45,13 @@ class Bot:
                         self._prefix + "реактстарт" : ["реактстарт", "Ставлю реакции."],\
                         self._prefix + "реактстоп" : ["реактстоп", "Не ставлю реакции."],\
                         self._prefix + "трансстарт" : ["трансстарт", "Перевожу с UA на RU."],\
-                        self._prefix + "трансстоп" : ["трансстоп", "Не перевожу."]}
+                        self._prefix + "трансстоп" : ["трансстоп", "Не перевожу."],\
+                        self._prefix + "автотранслейт" : ["автотранслейт", "Перевожу автоматически с UA на RU."],\
+                        self._prefix + "потегам" : ["потегам", "Перевожу только по тегам."]}
         flag_resp_gl = 0
         flag_rea_gl = 0
         flag_trans_gl = 1
+        flag_autotrans_gl = 0
 
         def command_handle(config, channelID):
             command_name = config[0]
@@ -56,6 +59,7 @@ class Bot:
             nonlocal flag_resp_gl
             nonlocal flag_rea_gl
             nonlocal flag_trans_gl
+            nonlocal flag_autotrans_gl
             if command_name == "чатстарт":
                 flag_resp_gl = 1
             elif command_name == "чатстоп":
@@ -68,6 +72,10 @@ class Bot:
                 flag_trans_gl = 1
             elif command_name == "трансстоп":
                 flag_trans_gl = 0
+            elif command_name == "автотранслейт":
+                flag_autotrans_gl = 1
+            elif command_name == "потегам":
+                flag_autotrans_gl = 0
             self._type_send(channelID, ans_gotit, []) 
 
 
@@ -101,7 +109,7 @@ class Bot:
                 self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
                 
-                if channelID in self._auto_trans_chs:
+                if channelID in self._auto_trans_chs or flag_autotrans_gl:
                     translator = Translator()
                     languages = translator.detect([content])
                     for lang in languages:
