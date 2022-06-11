@@ -107,7 +107,7 @@ class Bot:
                     for lang in languages:
                         if lang.lang == "uk" and not himself:
                             translation = translator.translate(content, dest="ru")
-                            self._type_send(channelID, '*' + translation.text + '*', [])
+                            self._type_send(channelID, translation.text, [])
 
         @self.bot.gateway.command
         def translate(resp):
@@ -143,7 +143,7 @@ class Bot:
                         lang_code = "ru"
                     translation = translator.translate(ref_content, dest=lang_code)
                     self.bot.typingAction(channelID)
-                    self.bot.reply(channelID, msg_id, '*' + translation.text + '*')
+                    self.bot.reply(channelID, msg_id, translation.text)
 
 
         @self.bot.gateway.command
