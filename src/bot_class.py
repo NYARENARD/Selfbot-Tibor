@@ -181,7 +181,7 @@ class Bot:
                             self._browser.get("https://translate.yandex.ru/ocr")
                             time.sleep(0.2)
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
-                            filePath = os.getcwd() + "\\attachment.png"
+                            filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
                             time.sleep(2)
                             for i in range(10):
@@ -189,7 +189,7 @@ class Bot:
                                 if image:
                                     break
                             image.screenshot("screenshot.png")
-                            image_link = os.getcwd() + "\\screenshot.png"
+                            image_link = os.getcwd() + "/screenshot.png"
                             self.bot.sendFile(channelID, image_link, isurl=False)
                         os.remove(os.getcwd() + "\\screenshot.png")
 
