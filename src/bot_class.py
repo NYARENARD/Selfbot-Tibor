@@ -15,6 +15,7 @@ class Bot:
     
     def __init__(self, cfg):
         self._token = cfg["token"]
+	    self._owner_id = cfg["owner_id"]
         self._database = cfg["database"]
         self._trigger = cfg["trigger"]
         self._channels = cfg["channels"]
@@ -32,6 +33,7 @@ class Bot:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--start-maximized")
         self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
+	    self.bot.sendMessage(self._log_channel, "<@" + self._owner_id + ">")
         self._logging("\n>>> Подключение успешно.\n", [])
 
     def __del__(self):
