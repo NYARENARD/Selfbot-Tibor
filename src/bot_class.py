@@ -194,7 +194,7 @@ class Bot:
                                     self._browser.refresh()
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            wait = WebDriverWait(self._browser, 4)
+                            time.sleep(4)
                             image = self._browser.find_element(By.CSS_SELECTOR, "image")
                             image.screenshot("screenshot.png")
                             #self._browser.save_screenshot("screenshot.png")
