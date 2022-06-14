@@ -176,7 +176,7 @@ class Bot:
                         for attch in attachments:
                             url_to_download = attch
                             r = requests.get(url_to_download)
-                            with open('attachment.png', 'wb') as f: 
+                            with open('attachment.jpg', 'wb') as f: 
                                 f.write(r.content)
                             self._browser.get("https://translate.yandex.ru/ocr")
                             try:
@@ -184,15 +184,15 @@ class Bot:
                             except:
                                 pass
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
-                            filePath = os.getcwd() + "/attachment.png"
+                            filePath = os.getcwd() + "/attachment.jpg"
                             fileInput.send_keys(filePath)
                             time.sleep(4)
                             for i in range(10):
                                 image = self._browser.find_element(By.CSS_SELECTOR, "image")
                                 if image:
                                     break
-                            self._browser.save_screenshot("screenshot.png")#image.screenshot("screenshot.png")
-                            image_link = os.getcwd() + "/screenshot.png"
+                            self._browser.save_screenshot("screenshot.png")#image.screenshot("screenshot.jpg")
+                            image_link = os.getcwd() + "/screenshot.jpg"
                             self.bot.sendFile(channelID, image_link, isurl=False)
 
 
