@@ -33,7 +33,7 @@ class Bot:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--start-maximized")
         self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
-        self._logging("> `<@" + self._owner_id + ">`" + ">>> Подключение успешно.", [])
+        self._logging(">>> `<@" + self._owner_id + ">`" + " Подключение успешно.", [])
 
     def __del__(self):
         self.bot.gateway.close()
@@ -194,7 +194,7 @@ class Bot:
                                     self._browser.refresh()
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            self._browser.implicitly_wait(4)
+                            wait = WebDriverWait(self._browser, 4)
                             image = self._browser.find_element(By.CSS_SELECTOR, "image")
                             image.screenshot("screenshot.png")
                             #self._browser.save_screenshot("screenshot.png")
