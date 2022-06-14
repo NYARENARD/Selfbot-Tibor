@@ -183,28 +183,27 @@ class Bot:
                                 f.write(r.content)
                                 self._logging("~ Attachment downloaded", [])
                             self._logging("~ Waiting for site to load", [])
-                            self._browser.implicitly_wait(10)
                             self._browser.get("https://translate.yandex.ru/ocr")
                             self._logging("~ Site loaded", [])
-                            fileInput = None
-                            while not fileInput:
-                                try:
-                                    accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click()
-                                    self._logging("~ Trying to accept cookies", [])
-                                except:
-                                    self._logging("~ Already accepted cookies", [])
-                                try:
-                                    fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
-                                    self._logging("~ Trying to find file input", [])
-                                except:
-                                    self._browser.refresh()
-                                    self._logging("~ Refreshed", [])
+                            try:
+                                self._logging("~ Trying to accept cookies", [])
+                                self._browser.implicitly_wait(1)
+                                accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click() 
+                            except:
+                                self._logging("~ Already accepted cookies", [])
+                            try:
+                                self._logging("~ Trying to find file input", [])
+                                self._browser.implicitly_wait(1)
+                                fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
+                            except:
+                                self._logging("~ Error: File input not found", [])
+                                return
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
                             self._logging("~ File sent to server", [])
                             time.sleep(4)
-                            image = self._browser.find_element(By.CSS_SELECTOR, "image")
                             self._logging("~ Trying to find image", [])
+                            image = self._browser.find_element(By.CSS_SELECTOR, "image")
                             image.screenshot("screenshot.png")
                             self._logging("~ Screenshot image", [])
                             #self._browser.save_screenshot("screenshot.png")
