@@ -181,37 +181,36 @@ class Bot:
                             r = requests.get(url_to_download)
                             with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
-                                self._logging("~ Attachment downloaded")
-                            self._logging("~ Waiting for site to load")
+                                self._logging("~ Attachment downloaded", [])
+                            self._logging("~ Waiting for site to load", [])
                             self._browser.implicitly_wait(10)
                             self._browser.get("https://translate.yandex.ru/ocr")
-                            self._logging("~ Site loaded")
+                            self._logging("~ Site loaded", [])
                             fileInput = None
                             while not fileInput:
                                 try:
                                     accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click()
-                                    self._logging("~ Trying to accept cookies")
+                                    self._logging("~ Trying to accept cookies", [])
                                 except:
-                                    pass
-                                    self._logging("~ Already accepted cookies")
+                                    self._logging("~ Already accepted cookies", [])
                                 try:
                                     fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
-                                    self._logging("~ Trying to find file input")
+                                    self._logging("~ Trying to find file input", [])
                                 except:
                                     self._browser.refresh()
-                                    self._logging("~ Refreshed")
+                                    self._logging("~ Refreshed", [])
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            self._logging("~ File sent to server")
+                            self._logging("~ File sent to server", [])
                             time.sleep(4)
                             image = self._browser.find_element(By.CSS_SELECTOR, "image")
-                            self._logging("~ Trying to find image")
+                            self._logging("~ Trying to find image", [])
                             image.screenshot("screenshot.png")
-                            self._logging("~ Screenshot image")
+                            self._logging("~ Screenshot image", [])
                             #self._browser.save_screenshot("screenshot.png")
                             image_link = os.getcwd() + "/screenshot.png"
                             self.bot.sendFile(channelID, image_link, isurl=False)
-                            self._logging("~ File sent to receiver")
+                            self._logging("~ File sent to receiver", [])
 
 
 
