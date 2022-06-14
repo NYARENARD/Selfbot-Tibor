@@ -29,6 +29,7 @@ class Bot:
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--no-sandbox")
         self._browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+	self._browser.manage().window().maximize()
         self._logging("\n>>> Подключение успешно.\n", [])
 
     def __del__(self):
@@ -181,7 +182,7 @@ class Bot:
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            time.sleep(2)
+                            time.sleep(3)
                             for i in range(10):
                                 image = self._browser.find_element(By.TAG_NAME, "image")
                                 if image:
