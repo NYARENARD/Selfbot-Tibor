@@ -194,7 +194,7 @@ class Bot:
                             self._browser.save_screenshot("screenshot.png")#image.screenshot("screenshot.png")
                             self._browser.quit()
                             image_link = os.getcwd() + "/screenshot.png"
-                            self.bot.sendFile(channelID, image_link, isurl=False
+                            self.bot.sendFile(channelID, image_link, isurl=False)
 
 
 
