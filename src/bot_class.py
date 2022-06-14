@@ -182,12 +182,12 @@ class Bot:
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            time.sleep(3)
+                            time.sleep(4)
                             for i in range(10):
                                 image = self._browser.find_element(By.TAG_NAME, "image")
                                 if image:
                                     break
-                            image.screenshot("screenshot.png")
+                            self._browser.save_screenshot("screenshot.png")#image.screenshot("screenshot.png")
                             image_link = os.getcwd() + "/screenshot.png"
                             self.bot.sendFile(channelID, image_link, isurl=False)
 
