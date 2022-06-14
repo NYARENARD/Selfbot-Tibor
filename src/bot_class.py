@@ -28,8 +28,8 @@ class Bot:
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--start-maximized")
         self._browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        self._browser.manage().window().maximize()
         self._logging("\n>>> Подключение успешно.\n", [])
 
     def __del__(self):
