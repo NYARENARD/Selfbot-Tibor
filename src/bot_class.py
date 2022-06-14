@@ -179,12 +179,16 @@ class Bot:
                             with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
                             self._browser.get("https://translate.yandex.ru/ocr")
+                            try:
+                                accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click()
+                            except:
+                                pass
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
                             time.sleep(4)
                             for i in range(10):
-                                image = self._browser.find_element(By.TAG_NAME, "image")
+                                image = self._browser.find_element(By.CSS_SELECTOR, "image")
                                 if image:
                                     break
                             self._browser.save_screenshot("screenshot.png")#image.screenshot("screenshot.png")
