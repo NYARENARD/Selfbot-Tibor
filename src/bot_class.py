@@ -191,7 +191,8 @@ class Bot:
                                 image = self._browser.find_element(By.CSS_SELECTOR, "image")
                                 if image:
                                     break
-                            self._browser.save_screenshot("screenshot.png")#image.screenshot("screenshot.jpg")
+                            image.screenshot("screenshot.jpg")
+                            #self._browser.save_screenshot("screenshot.jpg")
                             image_link = os.getcwd() + "/screenshot.jpg"
                             self.bot.sendFile(channelID, image_link, isurl=False)
 
