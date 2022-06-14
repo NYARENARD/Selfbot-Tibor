@@ -181,17 +181,18 @@ class Bot:
                             with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
                             self._browser.get("https://translate.yandex.ru/ocr")
-                            try:
-                                accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click()
-                            except:
-                                pass
-                            fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
+                            while not fileInput:
+                                try:
+                                    accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click()
+                                except:
+                                    pass
+                                try:
+                                    fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
+                                except:
+                                    self._browser.refresh()
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            try:
-                                element = WebDriverWait(self._browser, 5).until(EC.presence_of_element_located((By.CLASS, "image-text-block")))
-                            except:
-                                print("error")
+                            self._browser.implicitly_wait(3)
                             image = self._browser.find_element(By.CSS_SELECTOR, "image")
                             image.screenshot("screenshot.png")
                             #self._browser.save_screenshot("screenshot.png")
