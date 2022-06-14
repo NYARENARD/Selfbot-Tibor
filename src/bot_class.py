@@ -23,11 +23,14 @@ class Bot:
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
+        self._browser = webdriver.Firefox()
         self._logging("\n>>> Подключение успешно.\n", [])
 
     def __del__(self):
         self.bot.gateway.close()
         self._thread.join()
+        self._browser.quit()
+        os.remove(os.getcwd() + "\\geckodriver.log")
         self._logging("\n>>> Соединение сброшено.\n", [])
 	
     def _logging(self, message, attachments):
@@ -127,15 +130,18 @@ class Bot:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
                 content = m["content"]
-                attachments = []
-                for dict in m['attachments']:
-                    attachments.append(dict['url'])
                 self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
                 ref_msg = m["referenced_message"]
                 if ref_msg == None:
                     return
-                ref_content = ref_msg["content"]
+                try:
+                    ref_content = ref_msg["content"]
+                except:
+                    ref_content = None
+                attachments = []
+                for dict in ref_msg['attachments']:
+                    attachments.append(dict['url'])
                 
                 mentioned = False
                 for i in m["mentions"]:
@@ -144,41 +150,43 @@ class Bot:
                         msg_id = m["id"]
                  
                 if mentioned:
-                    translator = Translator()
-                    inv_langs = {v: k for k, v in LANGUAGES.items()}
-                    content = content.split(' ')
-                    if not (len(content) == 1 and "<@" in content[0]):
-                        if len(content) > 1:
-                            dst_lang_raw = content[1]
-                        elif "<@" not in content[0]:
-                            dst_lang_raw = content[0]
-                        dst_lang = translator.translate(dst_lang_raw, dest="en").text.lower()
-                        lang_code = inv_langs[dst_lang]
-                    else:
-                        lang_code = "ru"
-                    translation = translator.translate(ref_content, dest=lang_code)
-                    self.bot.typingAction(channelID)
-                    self.bot.reply(channelID, msg_id, translation.text)
+                    if ref_content:
+                        translator = Translator()
+                        inv_langs = {v: k for k, v in LANGUAGES.items()}
+                        content = content.split(' ')
+                        if not (len(content) == 1 and "<@" in content[0]):
+                            if len(content) > 1:
+                                dst_lang_raw = content[1]
+                            elif "<@" not in content[0]:
+                                dst_lang_raw = content[0]
+                            dst_lang = translator.translate(dst_lang_raw, dest="en").text.lower()
+                            lang_code = inv_langs[dst_lang]
+                        else:
+                            lang_code = "ru"
+                        translation = translator.translate(ref_content, dest=lang_code)
+                        self.bot.typingAction(channelID)
+                        self.bot.reply(channelID, msg_id, translation.text)
                     
                     if attachments != []:
-                        browser = webdriver.Firefox()
-                        
                         for attch in attachments:
                             url_to_download = attch
                             r = requests.get(url_to_download)
                             with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
-                            browser.get("https://translate.yandex.ru/ocr")
+                            self._browser.get("https://translate.yandex.ru/ocr")
                             time.sleep(0.2)
-                            fileInput = browser.find_element_by_xpath("//input[@type='file']")
+                            fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
                             filePath = os.getcwd() + "\\attachment.png"
                             fileInput.send_keys(filePath)
-                            time.sleep(1)
-                            image = browser.find_element(By.TAG_NAME, "image")
+                            time.sleep(2)
+                            for i in range(10):
+                                image = self._browser.find_element(By.TAG_NAME, "image")
+                                if image:
+                                    break
                             image.screenshot("screenshot.png")
-                            self.bot.sendFile(channelID, os.getcwd + "\\screenshot.png")
-                        os.remove(os.getcwd + "\\screenshot.png")
-                        os.remove(os.getcwd + "\\geckodriver.log")
+                            image_link = os.getcwd() + "\\screenshot.png"
+                            self.bot.sendFile(channelID, image_link, isurl=False)
+                        os.remove(os.getcwd() + "\\screenshot.png")
 
 
 
