@@ -174,15 +174,10 @@ class Bot:
                     
                     if attachments != []:
                         for attch in attachments:
-                            url_to_download = attch
-                            r = requests.get(url_to_download)
-                            with open('attachment.png', 'wb') as f: 
-                                f.write(r.content)
                             self._browser.get("https://translate.yandex.ru/ocr")
                             time.sleep(0.2)
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
-                            filePath = os.getcwd() + "\\attachment.png"
-                            fileInput.send_keys(filePath)
+                            fileInput.send_keys(attch)
                             time.sleep(2)
                             for i in range(10):
                                 image = self._browser.find_element(By.TAG_NAME, "image")
