@@ -1,3 +1,5 @@
 discum==1.4.0
 schedule==1.1.0
 googletrans==3.1.0a0
+selenium==4.2.0
+requests==2.28.0
