@@ -33,8 +33,7 @@ class Bot:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--start-maximized")
         self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
-        self.bot.sendMessage(self._log_channel, "<@" + self._owner_id + ">")
-        self._logging("\n>>> Подключение успешно.\n", [])
+        self._logging("`<@" + self._owner_id + ">`" + ">>> Подключение успешно.\n", [])
 
     def __del__(self):
         self.bot.gateway.close()
@@ -183,6 +182,7 @@ class Bot:
                             with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
                             self._browser.get("https://translate.yandex.ru/ocr")
+                            fileInput = None
                             while not fileInput:
                                 try:
                                     accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click()
