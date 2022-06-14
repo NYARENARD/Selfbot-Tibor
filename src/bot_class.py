@@ -15,7 +15,7 @@ class Bot:
     
     def __init__(self, cfg):
         self._token = cfg["token"]
-	    self._owner_id = cfg["owner_id"]
+        self._owner_id = cfg["owner_id"]
         self._database = cfg["database"]
         self._trigger = cfg["trigger"]
         self._channels = cfg["channels"]
