@@ -189,8 +189,8 @@ class Bot:
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
 			    try:
-                                element = WebDriverWait(self._browser, 5).until(EC.presence_of_element_located((By.CLASS, "image-text-block")))
-                            except:
+				element = WebDriverWait(self._browser, 5).until(EC.presence_of_element_located((By.CLASS, "image-text-block")))
+			    except:
                                 print(“some error happen !!”)
                             image = self._browser.find_element(By.CSS_SELECTOR, "image")
                             image.screenshot("screenshot.png")
