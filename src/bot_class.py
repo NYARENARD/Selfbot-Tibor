@@ -28,9 +28,9 @@ class Bot:
         self._thread.start()
         chrome_options = webdriver.ChromeOptions()
         chrome_options.binary_location = cfg["binary_location"]
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
+        #chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--disable-dev-shm-usage")
+        #chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--start-maximized")
         self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
         self._logging(">>> `<@" + self._owner_id + ">`" + " Подключение успешно.", [])
@@ -181,36 +181,24 @@ class Bot:
                             r = requests.get(url_to_download)
                             with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
-                                self._logging("~ Attachment downloaded", [])
-                            self._logging("~ Waiting for site to load", [])
                             self._browser.get("https://translate.yandex.ru/ocr")
-                            self._logging("~ Site loaded", [])
                             try:
-                                self._logging("~ Trying to accept cookies", [])
                                 self._browser.implicitly_wait(1)
                                 accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click() 
                             except:
-                                self._logging("~ Already accepted cookies", [])
+                                pass
                             try:
-                                self._logging("~ Trying to find file input", [])
                                 self._browser.implicitly_wait(1)
                                 fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
                             except:
-                                self._logging("~ Error: File input not found", [])
                                 return
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            self._logging("~ File sent to server", [])
                             time.sleep(4)
-                            self._logging("~ Trying to find image", [])
                             image = self._browser.find_element(By.CSS_SELECTOR, "image")
                             image.screenshot("screenshot.png")
-                            self._logging("~ Screenshot image", [])
-                            #self._browser.save_screenshot("screenshot.png")
                             image_link = os.getcwd() + "/screenshot.png"
                             self.bot.sendFile(channelID, image_link, isurl=False)
-                            self._logging("~ File sent to receiver", [])
-
 
 
 
