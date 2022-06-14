@@ -6,6 +6,8 @@ from googletrans import Translator
 from googletrans import LANGUAGES
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
 import os
 
@@ -24,12 +26,12 @@ class Bot:
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        chrome_options.binary_location = cfg["binary_location"]
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--start-maximized")
-        self._browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
         self._logging("\n>>> Подключение успешно.\n", [])
 
     def __del__(self):
@@ -176,7 +178,7 @@ class Bot:
                         for attch in attachments:
                             url_to_download = attch
                             r = requests.get(url_to_download)
-                            with open('attachment.jpg', 'wb') as f: 
+                            with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
                             self._browser.get("https://translate.yandex.ru/ocr")
                             try:
@@ -184,16 +186,16 @@ class Bot:
                             except:
                                 pass
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
-                            filePath = os.getcwd() + "/attachment.jpg"
+                            filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
-                            time.sleep(4)
-                            for i in range(10):
-                                image = self._browser.find_element(By.CSS_SELECTOR, "image")
-                                if image:
-                                    break
-                            image.screenshot("screenshot.jpg")
-                            #self._browser.save_screenshot("screenshot.jpg")
-                            image_link = os.getcwd() + "/screenshot.jpg"
+			    try:
+                                element = WebDriverWait(self._browser, 5).until(EC.presence_of_element_located((By.CLASS, "image-text-block")))
+                            except:
+                                print(“some error happen !!”)
+                            image = self._browser.find_element(By.CSS_SELECTOR, "image")
+                            image.screenshot("screenshot.png")
+                            #self._browser.save_screenshot("screenshot.png")
+                            image_link = os.getcwd() + "/screenshot.png"
                             self.bot.sendFile(channelID, image_link, isurl=False)
 
 
@@ -273,7 +275,6 @@ class Bot:
                 himself = (m["author"]["id"] == self_id)
 
                 if flag_resp_gl:
-                    time.sleep(2)
                     if not himself and channelID in self._channels and not bot_flag: 
                         if mentioned:
                             self.bot.typingAction(channelID)
