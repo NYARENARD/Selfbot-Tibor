@@ -35,7 +35,6 @@ class Bot:
         self.bot.gateway.close()
         self._thread.join()
         self._browser.quit()
-        os.remove(os.getcwd() + "\\geckodriver.log")
         self._logging("\n>>> Соединение сброшено.\n", [])
 	
     def _logging(self, message, attachments):
@@ -179,7 +178,6 @@ class Bot:
                             with open('attachment.png', 'wb') as f: 
                                 f.write(r.content)
                             self._browser.get("https://translate.yandex.ru/ocr")
-                            time.sleep(0.2)
                             fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
                             filePath = os.getcwd() + "/attachment.png"
                             fileInput.send_keys(filePath)
@@ -191,7 +189,6 @@ class Bot:
                             image.screenshot("screenshot.png")
                             image_link = os.getcwd() + "/screenshot.png"
                             self.bot.sendFile(channelID, image_link, isurl=False)
-                        os.remove(os.getcwd() + "\\screenshot.png")
 
 
 
