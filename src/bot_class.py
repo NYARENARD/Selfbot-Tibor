@@ -4,6 +4,10 @@ import time
 import random
 from googletrans import Translator
 from googletrans import LANGUAGES
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import requests
+import os
 
 class Bot:
     
@@ -123,6 +127,9 @@ class Bot:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
                 content = m["content"]
+                attachments = []
+                for dict in m['attachments']:
+                    attachments.append(dict['url'])
                 self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
                 ref_msg = m["referenced_message"]
@@ -135,8 +142,8 @@ class Bot:
                     if self_id == i["id"]:
                         mentioned = True
                         msg_id = m["id"]
-                #replied_to_bot = (ref_msg["author"]["id"] == self_id) 
-                if mentioned:# and not replied_to_bot:
+                 
+                if mentioned:
                     translator = Translator()
                     inv_langs = {v: k for k, v in LANGUAGES.items()}
                     content = content.split(' ')
@@ -152,6 +159,28 @@ class Bot:
                     translation = translator.translate(ref_content, dest=lang_code)
                     self.bot.typingAction(channelID)
                     self.bot.reply(channelID, msg_id, translation.text)
+                    
+                    if attachments != []:
+                        browser = webdriver.Firefox()
+                        
+                        for attch in attachments:
+                            url_to_download = attch
+                            r = requests.get(url_to_download)
+                            with open('attachment.png', 'wb') as f: 
+                                f.write(r.content)
+                            browser.get("https://translate.yandex.ru/ocr")
+                            time.sleep(0.2)
+                            fileInput = browser.find_element_by_xpath("//input[@type='file']")
+                            filePath = os.getcwd() + "\\attachment.png"
+                            fileInput.send_keys(filePath)
+                            time.sleep(1)
+                            image = browser.find_element(By.TAG_NAME, "image")
+                            image.screenshot("screenshot.png")
+                            self.bot.sendFile(channelID, os.getcwd + "\\screenshot.png")
+                        os.remove(os.getcwd + "\\screenshot.png")
+                        os.remove(os.getcwd + "\\geckodriver.log")
+
+
 
 
         @self.bot.gateway.command
