@@ -175,7 +175,7 @@ class Bot:
                         self.bot.typingAction(channelID)
                         self.bot.reply(channelID, msg_id, translation.text)
                     
-                    if attachments != []:
+                    if attachments != [] and 0:
                         for attch in attachments:
                             url_to_download = attch
                             r = requests.get(url_to_download)
