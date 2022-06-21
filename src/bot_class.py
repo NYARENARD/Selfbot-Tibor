@@ -4,10 +4,10 @@ import time
 import random
 from googletrans import Translator
 from googletrans import LANGUAGES
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+#from selenium import webdriver
+#from selenium.webdriver.common.by import By
+#from selenium.webdriver.support.ui import WebDriverWait
+#from selenium.webdriver.support import expected_conditions as EC
 import requests
 import os
 
@@ -26,19 +26,19 @@ class Bot:
         self.bot = discum.Client(token = self._token, log=False)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.binary_location = cfg["binary_location"]
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--start-maximized")
-        self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
+        #chrome_options = webdriver.ChromeOptions()
+        #chrome_options.binary_location = cfg["binary_location"]
+        #chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--disable-dev-shm-usage")
+        #chrome_options.add_argument("--no-sandbox")
+        #chrome_options.add_argument("--start-maximized")
+        #self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
         self._logging(">>> `<@" + self._owner_id + ">`" + " Подключение успешно.", [])
 
     def __del__(self):
         self.bot.gateway.close()
         self._thread.join()
-        self._browser.quit()
+        #self._browser.quit()
         self._logging("\n>>> Соединение сброшено.\n", [])
 	
     def _logging(self, message, attachments):
@@ -174,31 +174,7 @@ class Bot:
                         translation = translator.translate(ref_content, dest=lang_code)
                         self.bot.typingAction(channelID)
                         self.bot.reply(channelID, msg_id, translation.text)
-                    
-                    if attachments != [] and 0:
-                        for attch in attachments:
-                            url_to_download = attch
-                            r = requests.get(url_to_download)
-                            with open('attachment.png', 'wb') as f: 
-                                f.write(r.content)
-                            self._browser.get("https://translate.yandex.ru/ocr")
-                            try:
-                                self._browser.implicitly_wait(1)
-                                accept_btn = self._browser.find_element_by_xpath("//*[contains(text(), 'Accept')]").click() 
-                            except:
-                                pass
-                            try:
-                                self._browser.implicitly_wait(1)
-                                fileInput = self._browser.find_element_by_xpath("//input[@type='file']")
-                            except:
-                                return
-                            filePath = os.getcwd() + "/attachment.png"
-                            fileInput.send_keys(filePath)
-                            time.sleep(4)
-                            image = self._browser.find_element(By.CSS_SELECTOR, "image")
-                            image.screenshot("screenshot.png")
-                            image_link = os.getcwd() + "/screenshot.png"
-                            self.bot.sendFile(channelID, image_link, isurl=False)
+                  
 
 
 
