@@ -9,6 +9,6 @@ class_vars = {
     "prefix" : os.getenv("PREFIX"),
     "logchannel" : os.getenv("LOGCHANNEL"),
     "auto_trans_chs" : os.getenv("AUTO_TRANS_CHS"),
-    "binary_location" : os.getenv("GOOGLE_CHROME_BIN"),
-    "executable_location" : os.getenv("CHROMEDRIVER_PATH")
+    #"binary_location" : os.getenv("GOOGLE_CHROME_BIN"),
+    #"executable_location" : os.getenv("CHROMEDRIVER_PATH")
 }
