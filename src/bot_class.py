@@ -133,7 +133,7 @@ class Bot:
                             self._type_send(channelID, translation.text, [])
 
         @self.bot.gateway.command
-        def translate(resp):
+        def translate_msg(resp):
             if resp.event.message and flag_trans_gl:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
@@ -175,7 +175,27 @@ class Bot:
                         self.bot.typingAction(channelID)
                         self.bot.reply(channelID, msg_id, translation.text)
                   
-
+        @self.bot.gateway.command
+        def translate_reaction(resp):
+            if resp.event.reaction_added and flag_trans_gl:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]
+                ref_msg = m["message_id"]
+                if ref_msg == None:
+                    return
+                try:
+                    ref_content = ref_msg["content"]
+                except:
+                    ref_content = None             
+                
+                 
+                if m["emoji"]["name"]=='🔰':
+                    if ref_content:
+                        translator = Translator()
+                        lang_code = "ru"
+                        translation = translator.translate(ref_content, dest=lang_code)
+                        self.bot.typingAction(channelID)
+                        self.bot.sendMessage(channelID, translation.text)
 
 
         @self.bot.gateway.command
