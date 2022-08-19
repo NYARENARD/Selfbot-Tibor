@@ -23,7 +23,7 @@ class Bot:
         self._log_channel = cfg["logchannel"]
         self._auto_trans_chs = cfg["auto_trans_chs"] 
 
-        self.bot = discum.Client(token = self._token, log=False)
+        self.bot = discum.Client(token = self._token, log=True)
         self._thread = Thread(target=self._commands_launch)
         self._thread.start()
         #chrome_options = webdriver.ChromeOptions()
