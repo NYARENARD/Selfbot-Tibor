@@ -180,13 +180,11 @@ class Bot:
             if resp.event.reaction_added and flag_trans_gl:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
-                ref_msg = m["id"]
-                if ref_msg == None:
-                    return
+                ref_msg = m["message_id"]
                 try:
                     ref_content = ref_msg["content"]
                 except:
-                    ref_content = None             
+                    ref_content = m["content"]         
                 
                  
                 if m["emoji"]["name"]=='🔰':
