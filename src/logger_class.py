@@ -176,9 +176,9 @@ class Logger(Thread):
                         self.bot.addReaction(channelID, messageID, '✅') 
                     elif command == "удалить":
                         if m["referenced_message"] != None:
-                            ref_arr = m["referenced_message"]["content"].split(' ', 9)
+                            ref_arr = m["referenced_message"]["content"].split(' ', 10)
                             channel = ref_arr[2]
-                            msg_id = ref_arr[7] 
+                            msg_id = ref_arr[9] 
                         else:
                             channel = content_arr[1] 
                             msg_id = content_arr[2]
@@ -186,10 +186,10 @@ class Logger(Thread):
                         self.bot.addReaction(channelID, messageID, '✅') 
                     elif command == "ответить":
                         if m["referenced_message"] != None:
-                            ref_arr = m["referenced_message"]["content"].split(' ', 9)
+                            ref_arr = m["referenced_message"]["content"].split(' ', 10)
                             channel = ref_arr[2]
-                            msg_id = ref_arr[7] 
-                            content = content_arr[1] 
+                            msg_id = ref_arr[9]							
+                            content = content_arr[1] + ' ' + content_arr[2]
                         else:
                             extra_arr = content_arr[2].split(' ', 1)
                             channel = content_arr[1] 
@@ -206,10 +206,10 @@ class Logger(Thread):
                         self.bot.addReaction(channelID, messageID, '✅') 
                     elif command == "редактировать":
                         if m["referenced_message"] != None:
-                            ref_arr = m["referenced_message"]["content"].split(' ', 9)
+                            ref_arr = m["referenced_message"]["content"].split(' ', 10)
                             channel = ref_arr[2]
-                            msg_id = ref_arr[7]
-                            content = content_arr[1]
+                            msg_id = ref_arr[9]
+                            content = content_arr[1] + ' ' + content_arr[2]
                         else:
                             extra_arr = content_arr[2].split(' ', 1)
                             channel = content_arr[1] 
