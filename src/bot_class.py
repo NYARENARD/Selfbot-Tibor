@@ -106,6 +106,7 @@ class Bot(Thread):
             if resp.event.message and flag_trans_gl:
                 m = resp.parsed.auto()
                 channelID = m["channel_id"]
+                messageID = m["id"]
                 content = m["content"]
                 self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
@@ -137,7 +138,10 @@ class Bot(Thread):
                             elif "<@" + self_id + ">" not in content[0]:
                                 dst_lang_raw = content[0]
                             dst_lang = translator.translate(dst_lang_raw, dest="en").text.lower()
-                            lang_code = inv_langs[dst_lang]
+                            try:
+                                lang_code = inv_langs[dst_lang]
+                            except:
+                                self.bot.addReaction(channelID, messageID, '❔')
                         else:
                             lang_code = "ru"
                         translation = translator.translate(ref_content, dest=lang_code)
