@@ -21,7 +21,7 @@ class Bot(Thread):
         self._log_channel = cfg["logchannel"]
         self._auto_trans_chs = cfg["auto_trans_chs"] 
 
-        self.bot = discum.Client(token = self._token, log=True)
+        self.bot = discum.Client(token = self._token, log=False)
         #chrome_options = webdriver.ChromeOptions()
         #chrome_options.binary_location = cfg["binary_location"]
         #chrome_options.add_argument("--headless")
