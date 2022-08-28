@@ -108,13 +108,13 @@ class Bot(Thread):
                 content = m["content"]
                 self_id = self.bot.gateway.session.user["id"]
                 himself = (m["author"]["id"] == self_id)
-                ref_msg = m["referenced_message"]
+                try:
+                    ref_msg = m["referenced_message"]
+                except:
+                    return
                 if ref_msg == None:
                     return
-                try:
-                    ref_content = ref_msg["content"]
-                except:
-                    ref_content = None
+                ref_content = ref_msg["content"]
                 attachments = []
                 for dict in ref_msg['attachments']:
                     attachments.append(dict['url'])
@@ -130,10 +130,10 @@ class Bot(Thread):
                         translator = Translator()
                         inv_langs = {v: k for k, v in LANGUAGES.items()}
                         content = content.split(' ')
-                        if not (len(content) == 1 and "<@" in content[0]):
+                        if not (len(content) == 1 and "<@" + self_id + ">" in content[0]):
                             if len(content) > 1:
                                 dst_lang_raw = content[1]
-                            elif "<@" not in content[0]:
+                            elif "<@" + self_id + ">" not in content[0]:
                                 dst_lang_raw = content[0]
                             dst_lang = translator.translate(dst_lang_raw, dest="en").text.lower()
                             lang_code = inv_langs[dst_lang]
@@ -143,25 +143,25 @@ class Bot(Thread):
                         self.bot.typingAction(channelID)
                         self.bot.reply(channelID, msg_id, translation.text)
                   
-        @self.bot.gateway.command
-        def translate_reaction(resp):
-            if resp.event.reaction_added and flag_trans_gl:
-                m = resp.parsed.auto()
-                channelID = m["channel_id"]
-                ref_msg = m["message_id"]
-                try:
-                    ref_content = ref_msg["content"]
-                except:
-                    ref_content = m["content"]         
-                
-                 
-                if m["emoji"]["name"]=='🔰':
-                    if ref_content:
-                        translator = Translator()
-                        lang_code = "ru"
-                        translation = translator.translate(ref_content, dest=lang_code)
-                        self.bot.typingAction(channelID)
-                        self.bot.sendMessage(channelID, translation.text)
+        #@self.bot.gateway.command             TO BE REPAIRED
+        #def translate_reaction(resp):
+        #    if resp.event.reaction_added and flag_trans_gl:
+        #        m = resp.parsed.auto()
+        #        channelID = m["channel_id"]
+        #        ref_msg = m["message_id"]
+        #        try:
+        #            ref_content = ref_msg["content"]
+        #        except:
+        #            ref_content = m["content"]   ПО ИВЕНТУ РЕАКЦИИ НЕТ КОНТЕНТА      
+        #        
+        #         
+        #        if m["emoji"]["name"]=='🔰':
+        #            if ref_content:
+        #                translator = Translator()
+        #                lang_code = "ru"
+        #                translation = translator.translate(ref_content, dest=lang_code)
+        #                self.bot.typingAction(channelID)
+        #                self.bot.sendMessage(channelID, translation.text)
 
         self.bot.gateway.run()
 
