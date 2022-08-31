@@ -167,7 +167,7 @@ class Logger(Thread):
                         content = content_arr[2]
                         time_to_wait = len(content) // 5 + 1 
                         self.bot.addReaction(channelID, messageID, '💬') 
-                        t = Thread(target=imit, args=(channel, time_to_wait))
+                        t = Thread(target=self._imit, args=(channel, time_to_wait))
                         t.start()
                         t.join()
                         self.bot.sendMessage(channel, content)
@@ -200,7 +200,7 @@ class Logger(Thread):
                             content = extra_arr[1]
                         time_to_wait = len(content) // 5 + 1 
                         self.bot.addReaction(channelID, messageID, '💬') 
-                        t = Thread(target=imit, args=(channel, time_to_wait))
+                        t = Thread(target=self._imit, args=(channel, time_to_wait))
                         t.start()
                         t.join()
                         self.bot.reply(channel, msg_id, content)
@@ -223,8 +223,40 @@ class Logger(Thread):
                             message = extra_arr[1]
                         self.bot.editMessage(channel, msg_id, message) 
                         self.bot.addReaction(channelID, messageID, '✅') 
-                    
-        def imit(channel, time_to_wait):
+
+        @self.bot.gateway.command
+        def into_file(resp):
+            if resp.event.message:
+                m = resp.parsed.auto()
+                channelID = m["channel_id"]  
+                messageID = m["id"]
+                content = m["content"].lower()
+
+                if channelID == self._log_channel and flag_permission_gl:
+                    content_arr = content.split(' ', 2)
+                    command = content_arr[0]
+                    filename = content_arr[1]
+                    file_height = content_arr[2]
+                    request = content_arr[3]
+
+                    if command == "оформить":
+                        self.bot.addReaction(channelID, messageID, '💬')
+                        searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, limit=file_height)
+                        results = self.bot.filterSearchResults(searchResponse)
+                        with open(filename, w) as f:
+                            for message in results:
+                                to_input = message["content"]
+                                to_input = to_input.replace('`', '')
+                                to_input = to_input.replace('||', '')
+                                f.write(to_input + '\n')
+                        self.bot.sendFile(self._log_channel, filename, isurl=False)
+                        self.bot.addReaction(channelID, messageID, '✅')
+                        import os
+                        os.remove(filename)
+
+                            
+
+        def _imit(self, channel, time_to_wait):
             for counter in range(time_to_wait):
                 self.bot.typingAction(channel)
                 time.sleep(1)
