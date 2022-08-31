@@ -240,7 +240,7 @@ class Logger(Thread):
                     content_arr = content.split(' ', 3)
                     command = content_arr[0]
                     filename = content_arr[1]
-                    file_height = content_arr[2]
+                    file_height = int(content_arr[2])
                     request = content_arr[3]
 
                     if command == "оформить":
