@@ -245,19 +245,25 @@ class Logger(Thread):
 
                     if command == "оформить":
                         self.bot.addReaction(channelID, messageID, '💬')
-                        mul = file_height
-                        while mul % 25 != 0:
-                            mul += 1
-                        searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, afterNumResults=mul, limit=file_height)
-                        print(searchResponse)
-                        results = self.bot.filterSearchResults(searchResponse)
-                        print(results)
+                        full_arr = []
+                        num_processed = 0
+                        h_temp = file_height
                         with open(filename, 'w', encoding="utf-8") as f:
-                            for message in results:
-                                to_input = message["content"]
-                                to_input = to_input.replace('`', '')
-                                to_input = to_input.replace('||', '')
-                                f.write(to_input + '\n')
+                            while num_processed < file_height:
+                                if h_temp >= 25:
+                                    diff = 25 
+                                else:
+                                    diff = h_temp
+                                h_temp -= diff
+                                searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, afterNumResults=num_processed, limit=diff)
+                                results = self.bot.filterSearchResults(searchResponse)
+                                for message in results:
+                                    to_input = message["content"]
+                                    to_input = to_input.replace('`', '')
+                                    to_input = to_input.replace('||', '')
+                                    f.write(to_input + '\n')
+                                num_processed += diff
+
                         self.bot.sendFile(self._log_channel, filename, isurl=False)
                         self.bot.addReaction(channelID, messageID, '✅')
                         import os
