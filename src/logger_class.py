@@ -233,7 +233,7 @@ class Logger(Thread):
                 content = m["content"].lower()
 
                 if channelID == self._log_channel and flag_permission_gl:
-                    content_arr = content.split(' ', 2)
+                    content_arr = content.split(' ', 3)
                     command = content_arr[0]
                     filename = content_arr[1]
                     file_height = content_arr[2]
