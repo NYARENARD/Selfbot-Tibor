@@ -91,7 +91,7 @@ class Logger(Thread):
 
                 if not bot_flag and channelID != self._log_channel:
                     payload = "`MSG " + "`||`[{}{}]".format(command_towrite, mentioned_towrite).rjust(4) + ' ' + \
-                              "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(23) + " | " + \
+                              "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
                               "{}".format(msg_id).rjust(18) + " | `||`" + "{}#{}".format(username, discriminator).rjust(21) + \
                               "` **Replied**: `" + " {}`".format(content)
                     if m["referenced_message"] != None:
@@ -106,7 +106,7 @@ class Logger(Thread):
                             self._logging(payload, attachments)   
                     else:
                         payload = "`MSG " + "`||`[{}{}]".format(command_towrite, mentioned_towrite).rjust(4) + ' ' + \
-                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(23) + " | " + \
+                                  "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
                                   "{}".format(msg_id).rjust(18) + " | `||`" + "{}#{}".format(username, discriminator).rjust(21) + \
                                   ": " + " {}`".format(content)
                         self._logging(payload, attachments)
@@ -245,7 +245,6 @@ class Logger(Thread):
 
                     if command == "оформить":
                         self.bot.addReaction(channelID, messageID, '💬')
-                        full_arr = []
                         num_processed = 0
                         h_temp = file_height
                         with open(filename, 'w', encoding="utf-8") as f:
@@ -255,8 +254,11 @@ class Logger(Thread):
                                 else:
                                     diff = h_temp
                                 h_temp -= diff
-                                searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, afterNumResults=num_processed, limit=diff)
-                                results = self.bot.filterSearchResults(searchResponse)
+                                try:
+                                    searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, afterNumResults=num_processed, limit=diff)
+                                    results = self.bot.filterSearchResults(searchResponse)
+                                except KeyError:
+                                    break
                                 for message in results:
                                     to_input = message["content"]
                                     to_input = to_input.replace('`', '')
