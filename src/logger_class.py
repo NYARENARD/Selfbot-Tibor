@@ -249,7 +249,9 @@ class Logger(Thread):
                         while mul % 25 != 0:
                             mul += 1
                         searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, afterNumResults=mul, limit=file_height)
+                        print(searchResponse)
                         results = self.bot.filterSearchResults(searchResponse)
+                        print(results)
                         with open(filename, 'w', encoding="utf-8") as f:
                             for message in results:
                                 to_input = message["content"]
