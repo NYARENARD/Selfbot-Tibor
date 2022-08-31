@@ -233,8 +233,10 @@ class Logger(Thread):
                 channelID = m["channel_id"]  
                 messageID = m["id"]
                 content = m["content"].lower()
+                self_id = self.bot.gateway.session.user["id"]
+                himself = (m["author"]["id"] == self_id)
 
-                if channelID == self._log_channel and flag_permission_gl:
+                if channelID == self._log_channel and flag_permission_gl and not himself:
                     content_arr = content.split(' ', 3)
                     command = content_arr[0]
                     filename = content_arr[1]
@@ -243,7 +245,10 @@ class Logger(Thread):
 
                     if command == "оформить":
                         self.bot.addReaction(channelID, messageID, '💬')
-                        searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, limit=file_height)
+                        mul = file_height
+                        while mul % 25 != 0:
+                            mul += 1
+                        searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, afterNumResults=mul, limit=file_height)
                         results = self.bot.filterSearchResults(searchResponse)
                         with open(filename, 'w', encoding="utf-8") as f:
                             for message in results:
