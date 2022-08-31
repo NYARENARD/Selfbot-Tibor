@@ -243,7 +243,7 @@ class Logger(Thread):
                         self.bot.addReaction(channelID, messageID, '💬')
                         searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=request, limit=file_height)
                         results = self.bot.filterSearchResults(searchResponse)
-                        with open(filename, w) as f:
+                        with open(filename, 'w', encoding="utf-8") as f:
                             for message in results:
                                 to_input = message["content"]
                                 to_input = to_input.replace('`', '')
