@@ -94,7 +94,7 @@ class Logger(Thread):
                               "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
                               "{}".format(msg_id).rjust(18) + " | `||`" + "{}#{}".format(username, discriminator).rjust(21) + \
                               "` **Replied**: `" + " {}`".format(content)
-                    time.wait(1)
+                    time.sleep(1)
                     if m["referenced_message"] != None:
                         searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=m["referenced_message"]["id"])
                         results = self.bot.filterSearchResults(searchResponse)
@@ -123,7 +123,7 @@ class Logger(Thread):
                               " | " + "{}".format(msg_id).rjust(18) + "`|| ** Deleted**"
                     searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=msg_id)
                     results = self.bot.filterSearchResults(searchResponse)
-                    time.wait(1) 
+                    time.sleep(1) 
                     try:
                         deleted_msg = results[0]["id"] 
                         self.bot.reply(self._log_channel, deleted_msg, payload) 
@@ -142,7 +142,7 @@ class Logger(Thread):
                               " | " + "{}".format(msg_id).rjust(18) + "`|| ** Updated**: `" + content + '`'
                     searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=msg_id)
                     results = self.bot.filterSearchResults(searchResponse)
-                    time.wait(1)
+                    time.sleep(1)
                     try:
                         updated_msg = results[0]["id"] 
                         self.bot.reply(self._log_channel, updated_msg, payload) 
