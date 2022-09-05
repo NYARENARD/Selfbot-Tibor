@@ -27,7 +27,9 @@ class Logger(Thread):
             self.bot.reply(self._log_channel, reference, content)
         for url in attachments:
             payload = "`URL:  " + "{}`".format(url)
+			time.sleep(1)
             self.bot.sendMessage(self._log_channel, payload)
+			time.sleep(1)
             self.bot.sendFile(self._log_channel, url, isurl=True)
 
     
