@@ -13,14 +13,18 @@ class Logger(Thread):
 
     def __del__(self):
         self.bot.gateway.close()
-        self._logging("`>>> Соединение логгера сброшено.`", [])
+        self._logging("msg", "`>>> Соединение логгера сброшено.`")
 	
     def run(self):
         self._logger_launch()
 
-    def _logging(self, message, attachments):
-        print(message)
-        self.bot.sendMessage(self._log_channel, message)
+    def _logging(self, type, content, attachments = [], reference = ""):
+        print(content)
+        time.sleep(1)
+        if type == "msg":
+            self.bot.sendMessage(self._log_channel, content)
+        elif type == "rpl":
+            self.bot.reply(self._log_channel, reference, content)
         for url in attachments:
             payload = "`URL:  " + "{}`".format(url)
             self.bot.sendMessage(self._log_channel, payload)
@@ -98,18 +102,16 @@ class Logger(Thread):
                         searchResponse = self.bot.searchMessages(channelID=self._log_channel, textSearch=m["referenced_message"]["id"])
                         results = self.bot.filterSearchResults(searchResponse)
                         try:
-                            ref_msg = results[0]["id"]							
-                            self.bot.reply(self._log_channel, ref_msg, payload)
-                            for url in attachments:
-                                self.bot.sendFile(self._log_channel, url, isurl=True)
+                            ref_msg = results[0]["id"]
+                            self._logging("rpl", payload, attachments, ref_msg)							
                         except:
-                            self._logging(payload, attachments)   
+                            self._logging("msg", payload, attachments)   
                     else:
                         payload = "`MSG " + "`||`[{}{}]".format(command_towrite, mentioned_towrite).rjust(4) + ' ' + \
                                   "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
                                   "{}".format(msg_id).rjust(18) + " | `||`" + "{}#{}".format(username, discriminator).rjust(21) + \
                                   ": " + " {}`".format(content)
-                        self._logging(payload, attachments)
+                        self._logging("msg", payload, attachments)
 
         @self.bot.gateway.command
         def log_delete(resp):
@@ -124,9 +126,9 @@ class Logger(Thread):
                     results = self.bot.filterSearchResults(searchResponse)
                     try:
                         deleted_msg = results[0]["id"] 
-                        self.bot.reply(self._log_channel, deleted_msg, payload) 
+                        self._logging("rpl", payload, reference=deleted_msg) 
                     except:
-                        self._logging(payload, [])
+                        self._logging("msg", payload)
 
         @self.bot.gateway.command
         def log_update(resp):
@@ -142,9 +144,9 @@ class Logger(Thread):
                     results = self.bot.filterSearchResults(searchResponse)
                     try:
                         updated_msg = results[0]["id"] 
-                        self.bot.reply(self._log_channel, updated_msg, payload) 
+                        self._logging("rpl", payload, reference=updated_msg) 
                     except:
-                        self._logging(payload, [])
+                        self._logging("msg", payload)
 
                 
         @self.bot.gateway.command

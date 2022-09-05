@@ -29,17 +29,17 @@ class Bot(Thread):
         #chrome_options.add_argument("--no-sandbox")
         #chrome_options.add_argument("--start-maximized")
         #self._browser = webdriver.Chrome(executable_path=cfg["executable_location"], chrome_options=chrome_options)
-        self._logging("`>>> `<@" + self._owner_id + ">`" + " Подключение успешно.`", [])
+        self._logging("`>>> `<@" + self._owner_id + ">`" + " Подключение успешно.`")
 
     def __del__(self):
         self.bot.gateway.close()
         #self._browser.quit()
-        self._logging(">>> Соединение бота сброшено.\n", [])
+        self._logging(">>> Соединение бота сброшено.\n")
 
     def run(self):
         self._bot_launch()
 	
-    def _logging(self, message, attachments):
+    def _logging(self, message, attachments = []):
         print(message)
         self.bot.sendMessage(self._log_channel, message)
         for url in attachments:
