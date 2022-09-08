@@ -27,11 +27,14 @@ class Logger(Thread):
             self.bot.reply(self._log_channel, reference, content)
         for url in attachments:
             payload = "`URL:  " + "{}`".format(url)
-			time.sleep(1)
+            time.sleep(1)
             self.bot.sendMessage(self._log_channel, payload)
-			time.sleep(1)
+            time.sleep(1)
             self.bot.sendFile(self._log_channel, url, isurl=True)
 
+    def _thread_logging(self, type, content, attachments = [], reference = ""):
+        t = Thread(target=self._logging, args=(type, content, attachments, reference))
+        t.start()
     
     def _logger_launch(self):
 
@@ -105,15 +108,15 @@ class Logger(Thread):
                         results = self.bot.filterSearchResults(searchResponse)
                         try:
                             ref_msg = results[0]["id"]
-                            self._logging("rpl", payload, attachments, ref_msg)							
+                            self._thread_logging("rpl", payload, attachments, ref_msg)							
                         except:
-                            self._logging("msg", payload, attachments)   
+                            self._thread_logging("msg", payload, attachments)   
                     else:
                         payload = "`MSG " + "`||`[{}{}]".format(command_towrite, mentioned_towrite).rjust(4) + ' ' + \
                                   "{}".format(channelID).rjust(18) + " | " + "{}".format(timestamp).rjust(22) + " | " + \
                                   "{}".format(msg_id).rjust(18) + " | `||`" + "{}#{}".format(username, discriminator).rjust(21) + \
                                   ": " + " {}`".format(content)
-                        self._logging("msg", payload, attachments)
+                        self._thread_logging("msg", payload, attachments)
 
         @self.bot.gateway.command
         def log_delete(resp):
@@ -128,9 +131,9 @@ class Logger(Thread):
                     results = self.bot.filterSearchResults(searchResponse)
                     try:
                         deleted_msg = results[0]["id"] 
-                        self._logging("rpl", payload, reference=deleted_msg) 
+                        self._thread_logging("rpl", payload, reference=deleted_msg) 
                     except:
-                        self._logging("msg", payload)
+                        self._thread_logging("msg", payload)
 
         @self.bot.gateway.command
         def log_update(resp):
@@ -146,9 +149,9 @@ class Logger(Thread):
                     results = self.bot.filterSearchResults(searchResponse)
                     try:
                         updated_msg = results[0]["id"] 
-                        self._logging("rpl", payload, reference=updated_msg) 
+                        self._thread_logging("rpl", payload, reference=updated_msg) 
                     except:
-                        self._logging("msg", payload)
+                        self._thread_logging("msg", payload)
 
                 
         @self.bot.gateway.command
