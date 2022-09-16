@@ -176,7 +176,7 @@ class Logger(Thread):
                         content = content_arr[2]
                         time_to_wait = len(content) // 5 + 1 
                         self.bot.addReaction(channelID, messageID, '💬') 
-                        t = Thread(target=self._imit, args=(channel, time_to_wait))
+                        t = Thread(target=_imit, args=(channel, time_to_wait))
                         t.start()
                         t.join()
                         self.bot.sendMessage(channel, content)
@@ -209,7 +209,7 @@ class Logger(Thread):
                             content = extra_arr[1]
                         time_to_wait = len(content) // 5 + 1 
                         self.bot.addReaction(channelID, messageID, '💬') 
-                        t = Thread(target=self._imit, args=(channel, time_to_wait))
+                        t = Thread(target=_imit, args=(channel, time_to_wait))
                         t.start()
                         t.join()
                         self.bot.reply(channel, msg_id, content)
