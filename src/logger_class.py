@@ -9,7 +9,7 @@ class Logger(Thread):
         self._token = cfg["token"]
         self._prefix = cfg["prefix"]
         self._log_channel = cfg["logchannel"]
-        self.bot = discum.Client(token = self._token, log=False)
+        self.bot = discum.Client(token = self._token, log=True)
 
     def __del__(self):
         self.bot.gateway.close()
