@@ -11,6 +11,8 @@ class Logger(Thread):
         self._log_channel = cfg["logchannel"]
         self.bot = discum.Client(token = self._token, log=False)
 
+        self._buf_flag = 0
+
     def __del__(self):
         self.bot.gateway.close()
         self._logging("msg", "`>>> Соединение логгера сброшено.`")
@@ -31,8 +33,12 @@ class Logger(Thread):
             self.bot.sendMessage(self._log_channel, payload)
             time.sleep(1)
             self.bot.sendFile(self._log_channel, url, isurl=True)
+        self._buf_flag = 0
 
     def _thread_logging(self, type, content, attachments = [], reference = ""):
+        while self._buf_flag:
+            pass
+        self._buf_flag = 1
         t = Thread(target=self._logging, args=(type, content, attachments, reference))
         t.start()
     
