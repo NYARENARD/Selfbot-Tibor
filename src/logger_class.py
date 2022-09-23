@@ -74,7 +74,7 @@ class Logger(Thread):
 
                 for command in command_list:
                     if content.lower() == self._prefix + command:
-                        command_handle(command_list[command], channelID, messageID)
+                        command_handle(command, channelID, messageID)
                         return
 
         @self.bot.gateway.command
